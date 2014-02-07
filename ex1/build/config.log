@@ -1,0 +1,345 @@
+# project  configured on Fri Feb  7 17:52:42 2014 by
+# waf 1.7.15 (abi 98, python 20704f0 on linux2)
+# using ./waf configure build
+#
+----------------------------------------
+Setting top to
+/home/philip/02564/ex1t
+----------------------------------------
+Setting out to
+/home/philip/02564/ex1t/build
+----------------------------------------
+Checking for 'g++' (c++ compiler)
+find program=['g++', 'c++'] paths=['/home/philip/.opam/4.00.1/bin', '/home/philip/.rbenv/shims', '/home/philip/.rbenv/bin', '/usr/local/heroku/bin', '/home/philip/.vim/local/usr/local/bin', '/home/philip/.opam/4.00.1/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games'] var='CXX' -> '/usr/bin/g++'
+find program=['ar'] paths=['/home/philip/.opam/4.00.1/bin', '/home/philip/.rbenv/shims', '/home/philip/.rbenv/bin', '/usr/local/heroku/bin', '/home/philip/.vim/local/usr/local/bin', '/home/philip/.opam/4.00.1/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games'] var='AR' -> '/usr/bin/ar'
+/usr/bin/g++
+----------------------------------------
+Checking for program qmake-qt4
+/usr/bin/qmake-qt4
+find program=['qmake-qt4'] paths=['/home/philip/.opam/4.00.1/bin', '/home/philip/.rbenv/shims', '/home/philip/.rbenv/bin', '/usr/local/heroku/bin', '/home/philip/.vim/local/usr/local/bin', '/home/philip/.opam/4.00.1/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/share/qt4/bin/'] var='QMAKE-QT4' -> '/usr/bin/qmake-qt4'
+['/usr/bin/qmake-qt4', '-query', 'QT_VERSION']
+out: 4.8.4
+
+----------------------------------------
+Checking for program qmake4
+not found
+find program=['qmake4'] paths=['/home/philip/.opam/4.00.1/bin', '/home/philip/.rbenv/shims', '/home/philip/.rbenv/bin', '/usr/local/heroku/bin', '/home/philip/.vim/local/usr/local/bin', '/home/philip/.opam/4.00.1/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/share/qt4/bin/'] var='QMAKE4' -> ''
+from /home/philip/02564/ex1t: Could not find the program qmake4
+----------------------------------------
+Checking for program qmake
+/usr/bin/qmake
+find program=['qmake'] paths=['/home/philip/.opam/4.00.1/bin', '/home/philip/.rbenv/shims', '/home/philip/.rbenv/bin', '/usr/local/heroku/bin', '/home/philip/.vim/local/usr/local/bin', '/home/philip/.opam/4.00.1/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/share/qt4/bin/'] var='QMAKE' -> '/usr/bin/qmake'
+['/usr/bin/qmake', '-query', 'QT_VERSION']
+out: 4.8.4
+
+['/usr/bin/qmake-qt4', '-query', 'QT_INSTALL_BINS']
+out: /usr/lib/x86_64-linux-gnu/qt4/bin
+
+----------------------------------------
+Checking for program uic-qt3
+not found
+find program=['uic-qt3'] paths=['/home/philip/.opam/4.00.1/bin', '/home/philip/.rbenv/shims', '/home/philip/.rbenv/bin', '/usr/local/heroku/bin', '/home/philip/.vim/local/usr/local/bin', '/home/philip/.opam/4.00.1/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/share/qt4/bin/'] var='UIC-QT3' -> ''
+from /home/philip/02564/ex1t: Could not find the program uic-qt3
+----------------------------------------
+Checking for program uic3
+/usr/bin/uic3
+find program=['uic3'] paths=['/home/philip/.opam/4.00.1/bin', '/home/philip/.rbenv/shims', '/home/philip/.rbenv/bin', '/usr/local/heroku/bin', '/home/philip/.vim/local/usr/local/bin', '/home/philip/.opam/4.00.1/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/share/qt4/bin/'] var='UIC3' -> '/usr/bin/uic3'
+----------------------------------------
+Checking for program uic-qt4
+/usr/bin/uic-qt4
+find program=['uic-qt4'] paths=['/home/philip/.opam/4.00.1/bin', '/home/philip/.rbenv/shims', '/home/philip/.rbenv/bin', '/usr/local/heroku/bin', '/home/philip/.vim/local/usr/local/bin', '/home/philip/.opam/4.00.1/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/share/qt4/bin/'] var='UIC-QT4' -> '/usr/bin/uic-qt4'
+/usr/bin/uic-qt4 -version 2>&1
+out: Qt User Interface Compiler version 4.8.4
+
+----------------------------------------
+Checking for uic version
+version 4.8.4
+----------------------------------------
+Checking for program moc-qt4
+/usr/bin/moc-qt4
+find program=['moc-qt4'] paths=['/home/philip/.opam/4.00.1/bin', '/home/philip/.rbenv/shims', '/home/philip/.rbenv/bin', '/usr/local/heroku/bin', '/home/philip/.vim/local/usr/local/bin', '/home/philip/.opam/4.00.1/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/share/qt4/bin/'] var='MOC-QT4' -> '/usr/bin/moc-qt4'
+----------------------------------------
+Checking for program rcc
+/usr/bin/rcc
+find program=['rcc'] paths=['/home/philip/.opam/4.00.1/bin', '/home/philip/.rbenv/shims', '/home/philip/.rbenv/bin', '/usr/local/heroku/bin', '/home/philip/.vim/local/usr/local/bin', '/home/philip/.opam/4.00.1/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/share/qt4/bin/'] var='RCC' -> '/usr/bin/rcc'
+----------------------------------------
+Checking for program lrelease-qt4
+/usr/bin/lrelease-qt4
+find program=['lrelease-qt4'] paths=['/home/philip/.opam/4.00.1/bin', '/home/philip/.rbenv/shims', '/home/philip/.rbenv/bin', '/usr/local/heroku/bin', '/home/philip/.vim/local/usr/local/bin', '/home/philip/.opam/4.00.1/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/share/qt4/bin/'] var='LRELEASE-QT4' -> '/usr/bin/lrelease-qt4'
+----------------------------------------
+Checking for program lupdate-qt4
+/usr/bin/lupdate-qt4
+find program=['lupdate-qt4'] paths=['/home/philip/.opam/4.00.1/bin', '/home/philip/.rbenv/shims', '/home/philip/.rbenv/bin', '/usr/local/heroku/bin', '/home/philip/.vim/local/usr/local/bin', '/home/philip/.opam/4.00.1/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/share/qt4/bin/'] var='LUPDATE-QT4' -> '/usr/bin/lupdate-qt4'
+['/usr/bin/qmake-qt4', '-query', 'QT_INSTALL_LIBS']
+out: /usr/lib/x86_64-linux-gnu
+
+----------------------------------------
+Found the Qt4 libraries in
+/usr/lib/x86_64-linux-gnu
+['/usr/bin/qmake-qt4', '-query', 'QT_INSTALL_HEADERS']
+out: /usr/include/qt4
+
+----------------------------------------
+Checking for program pkg-config
+/usr/bin/pkg-config
+find program=['pkg-config'] paths=['/home/philip/.opam/4.00.1/bin', '/home/philip/.rbenv/shims', '/home/philip/.rbenv/bin', '/usr/local/heroku/bin', '/home/philip/.vim/local/usr/local/bin', '/home/philip/.opam/4.00.1/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games'] var='PKGCONFIG' -> '/usr/bin/pkg-config'
+----------------------------------------
+Checking for pkg-config version >= '0.1'
+['/usr/bin/pkg-config', '--atleast-pkgconfig-version=0.1']
+yes
+----------------------------------------
+Checking for 'QtCore_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtCore_debug']
+err: Package QtCore_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtCore_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtCore_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtGui_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtGui_debug']
+err: Package QtGui_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtGui_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtGui_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtUiTools_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtUiTools_debug']
+err: Package QtUiTools_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtUiTools_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtUiTools_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtNetwork_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtNetwork_debug']
+err: Package QtNetwork_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtNetwork_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtNetwork_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtOpenGL_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtOpenGL_debug']
+err: Package QtOpenGL_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtOpenGL_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtOpenGL_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtSql_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtSql_debug']
+err: Package QtSql_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtSql_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtSql_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtSvg_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtSvg_debug']
+err: Package QtSvg_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtSvg_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtSvg_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtTest_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtTest_debug']
+err: Package QtTest_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtTest_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtTest_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtXml_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtXml_debug']
+err: Package QtXml_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtXml_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtXml_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtXmlPatterns_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtXmlPatterns_debug']
+err: Package QtXmlPatterns_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtXmlPatterns_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtXmlPatterns_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtWebKit_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtWebKit_debug']
+err: Package QtWebKit_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtWebKit_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtWebKit_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'Qt3Support_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'Qt3Support_debug']
+err: Package Qt3Support_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `Qt3Support_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'Qt3Support_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtHelp_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtHelp_debug']
+err: Package QtHelp_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtHelp_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtHelp_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtScript_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtScript_debug']
+err: Package QtScript_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtScript_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtScript_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtDeclarative_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtDeclarative_debug']
+err: Package QtDeclarative_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtDeclarative_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtDeclarative_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtDesigner_debug'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtDesigner_debug']
+err: Package QtDesigner_debug was not found in the pkg-config search path.
+Perhaps you should add the directory containing `QtDesigner_debug.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'QtDesigner_debug' found
+
+not found
+from /home/philip/02564/ex1t: The configuration failed
+----------------------------------------
+Checking for 'QtCore'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtCore']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtCore  -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'QtGui'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtGui']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtCore  -lQtGui -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'QtUiTools'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtUiTools']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtUiTools -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtCore  -lQtUiTools -lQtXml -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'QtNetwork'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtNetwork']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtCore  -lQtNetwork -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'QtOpenGL'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtOpenGL']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui  -lQtOpenGL -lQtGui -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'QtSql'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtSql']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtCore  -lQtSql -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'QtSvg'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtSvg']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui  -lQtSvg -lQtGui -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'QtTest'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtTest']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtTest  -lQtTest  
+
+yes
+----------------------------------------
+Checking for 'QtXml'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtXml']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtCore  -lQtXml -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'QtXmlPatterns'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtXmlPatterns']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtNetwork  -lQtXmlPatterns -lQtNetwork -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'QtWebKit'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtWebKit']
+out: -DQT_SHARED -I/usr/include/qt4/QtWebKit -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtNetwork  -lQtWebKit -lQtGui -lQtNetwork -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'Qt3Support'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'Qt3Support']
+out: -DQT_SHARED -DQT3_SUPPORT -I/usr/include/qt4 -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql  -lQt3Support -lQtGui -lQtNetwork -lQtSql -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'QtHelp'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtHelp']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtHelp -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtCore  -lQtHelp -lQtNetwork -lQtSql -lQtXml -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'QtScript'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtScript']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtCore  -lQtScript -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'QtDeclarative'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtDeclarative']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtDeclarative -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui  -lQtDeclarative -lQtGui -lQtCore  
+
+yes
+----------------------------------------
+Checking for 'QtDesigner'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'QtDesigner']
+out: -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtDesigner -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtCore  -lQtDesigner -lQtXml -lQtCore  
+
+yes
