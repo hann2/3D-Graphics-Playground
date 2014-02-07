@@ -33,7 +33,7 @@ void QGLRenderThread::stop() {
 void QGLRenderThread::run() {
     GLFrame->makeCurrent();
     GLInit();
-    LoadShader("./Basic.vsh", "./Basic.gsh", "./Basic.fsh");
+    LoadShader("Basic.vsh", "Basic.gsh", "Basic.fsh");
 
     while (doRendering) {
         if(doResize) {
