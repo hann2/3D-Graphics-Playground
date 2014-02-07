@@ -1,2 +1,2 @@
 build/
-.lock-waf*
+\.lock-waf*
