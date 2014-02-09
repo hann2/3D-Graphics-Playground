@@ -22,11 +22,11 @@ def configure(ctx):
 
 def build(ctx):
     ctx.program(
-        source = 'glframe.cpp glrenderthread.cpp main.cpp mainwindow.cpp mainwindow.ui',
+        source = 'src/glframe.cpp src/glrenderthread.cpp src/main.cpp src/mainwindow.cpp src/mainwindow.ui src/Geometry.cpp src/load_collada.cpp',
         target = 'wireframe',
         features = 'qt4 cxx cxxprogram',
         uselib = 'QTCORE QTGUI QTOPENGL QTSVG QWIDGET QTSQL QTUITOOLS QTSCRIPT',
-        include = '.',
+        includes = ['lib'],
         lib = ['GL', 'GLU', 'X11']
     )
 

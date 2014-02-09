@@ -1,6 +1,7 @@
 #ifndef GLRENDERTHREAD_H
 #define GLRENDERTHREAD_H
 
+#include "Geometry.h"
 #include <QThread>
 #include <QGLWidget>
 
@@ -25,6 +26,7 @@ protected:
     void paintGL(void);
 
 private:
+    Geometry * suzanne;
     bool doRendering, doResize;
     int w, h, FrameCounter;
 

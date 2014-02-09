@@ -5,7 +5,10 @@
 
 #include "glrenderthread.moc"
 #include "glrenderthread.h"
+#include "load_collada.h"
 #include <GL/glu.h>
+#include <iostream>
+
 
 
 QGLRenderThread::QGLRenderThread(QGLFrame *parent) :
@@ -13,7 +16,7 @@ QGLRenderThread::QGLRenderThread(QGLFrame *parent) :
     GLFrame(parent) {
     doRendering = true;
     doResize = false;
-    FrameCounter=0;
+    FrameCounter = 0;
 
     ShaderProgram = NULL;
     VertexShader = GeometryShader = FragmentShader = NULL;
@@ -33,16 +36,14 @@ void QGLRenderThread::stop() {
 void QGLRenderThread::run() {
     GLFrame->makeCurrent();
     GLInit();
-    LoadShader("Basic.vsh", "Basic.gsh", "Basic.fsh");
+    LoadShader("shaders/wire.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
+    suzanne = load_collada("assets/models/suzanne.dae");
 
     while (doRendering) {
         if(doResize) {
             GLResize(w, h);
             doResize = false;
         }
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glLoadIdentity();
 
         paintGL(); // render actual frame
 
@@ -55,7 +56,10 @@ void QGLRenderThread::run() {
 
 
 void QGLRenderThread::GLInit(void) {
-    glClearColor(0.25f, 0.25f, 0.4f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
 }
 
 
@@ -64,7 +68,7 @@ void QGLRenderThread::GLResize(int width, int height) {
     glMatrixMode(GL_PROJECTION);
 
     glLoadIdentity();
-    gluPerspective(45.,((GLfloat)width)/((GLfloat)height),0.1f,1000.0f);
+    gluPerspective(45., ((GLfloat)width)/((GLfloat)height), 0.1f, 1000.0f);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -72,15 +76,20 @@ void QGLRenderThread::GLResize(int width, int height) {
 
 
 void QGLRenderThread::paintGL(void) {
-    glTranslatef(0.0f, 0.0f, -5.0f);            // move 5 units into the screen
-    glRotatef(FrameCounter,0.0f,0.0f,0.5f);     // rotate z-axis
-    glBegin(GL_QUADS);
-        glColor3f(1.,0.,0.);
-        glVertex3f(-1.0, -1.0,0.0);
-        glVertex3f(1.0, -1.0,0.0);
-        glVertex3f(1.0, 1.0,0.0);
-        glVertex3f(-1.0, 1.0,0.0);
-    glEnd();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    glTranslatef(0.0f, 0.0f, -5.0f);
+    glRotatef(FrameCounter, 1.0f, 1.0f, 1.0f);
+
+    for (int face_ind = 0; face_ind < suzanne->g_num_faces(); face_ind++) {
+        face_t * face = suzanne->g_face(face_ind);
+        glBegin(GL_POLYGON);
+        for (int corner = 0; corner < face->degree; corner++) {
+            float * vert = suzanne->g_vertex(face->corners[corner]);
+            glVertex3f(vert[0], vert[1], vert[2]);
+        }
+        glEnd();
+    }
 }
 
 
@@ -120,11 +129,6 @@ void QGLRenderThread::LoadShader(QString vshader, QString gshader, QString fshad
     } else {
         qWarning() << "Vertex Shader source file " << vshader << " not found.";
     }
-
-    qDebug() << "OpenGL Versions Supported: " << QGLFormat::openGLVersionFlags();
- 
-QString versionString(QLatin1String(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
-qDebug() << "Driver Version String:" << versionString;
 
     // load and compile geometry shader
     QFileInfo gsh(gshader);
