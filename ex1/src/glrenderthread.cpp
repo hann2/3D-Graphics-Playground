@@ -1,4 +1,4 @@
-#include <QGLShader>
+
 #include <QFileInfo>
 
 #include "glframe.h"
@@ -8,7 +8,12 @@
 #include "load_collada.h"
 #include <GL/glu.h>
 #include <iostream>
+#include <QDateTime>
 
+// fps in hz
+#define FRAME_RATE 60
+// frame length in ms
+#define FRAME_LENGTH (1000 / FRAME_RATE)
 
 
 QGLRenderThread::QGLRenderThread(QGLFrame *parent) :
@@ -36,10 +41,11 @@ void QGLRenderThread::stop() {
 void QGLRenderThread::run() {
     GLFrame->makeCurrent();
     GLInit();
-    LoadShader("shaders/wire.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
+    LoadShaders(NULL, "shaders/wire.gsh", "shaders/wire.fsh");
     suzanne = load_collada("assets/models/suzanne.dae");
 
     while (doRendering) {
+        long int start = QDateTime::currentMSecsSinceEpoch();
         if(doResize) {
             GLResize(w, h);
             doResize = false;
@@ -49,8 +55,11 @@ void QGLRenderThread::run() {
 
         FrameCounter++;
         GLFrame->swapBuffers();
-
-        msleep(16); // wait 16ms => about 60 FPS
+        int time_elapsed = QDateTime::currentMSecsSinceEpoch() - start;
+        // std::cout << "Frame took " << time_elapsed << " miliseconds.\n";
+        if (time_elapsed < FRAME_LENGTH) {
+            msleep(FRAME_LENGTH - time_elapsed);
+        }
     }
 }
 
@@ -71,7 +80,6 @@ void QGLRenderThread::GLResize(int width, int height) {
     gluPerspective(45., ((GLfloat)width)/((GLfloat)height), 0.1f, 1000.0f);
 
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
 }
 
 
@@ -92,8 +100,29 @@ void QGLRenderThread::paintGL(void) {
     }
 }
 
+void QGLRenderThread::ClearShader(QGLShader * shader) {
+    if (shader) {
+        delete shader;
+        shader = NULL;
+    }
+}
 
-void QGLRenderThread::LoadShader(QString vshader, QString gshader, QString fshader) {
+void QGLRenderThread::LoadShader(QGLShader::ShaderTypeBit shader_type, QGLShader * shader, QString file_name) {
+    QFileInfo vsh(file_name);
+    if (vsh.exists()) {
+        shader = new QGLShader(shader_type);
+        if (shader->compileSourceFile(file_name)) {
+            ShaderProgram->addShader(shader);
+        }
+        else {
+            qWarning() << "Shader Error with " << file_name << ",\n" << shader->log();
+        }
+    } else {
+        qWarning() << "Shader source file " << file_name << " not found.";
+    }
+}
+
+void QGLRenderThread::LoadShaders(QString vshader, QString gshader, QString fshader) {
     if (ShaderProgram) {
         ShaderProgram->release();
         ShaderProgram->removeAllShaders();
@@ -101,62 +130,22 @@ void QGLRenderThread::LoadShader(QString vshader, QString gshader, QString fshad
         ShaderProgram = new QGLShaderProgram;
     }
 
-    if (VertexShader) {
-        delete VertexShader;
-        VertexShader = NULL;
-    }
+    ClearShader(VertexShader);
+    ClearShader(GeometryShader);
+    ClearShader(FragmentShader);
 
-    if (GeometryShader) {
-        delete GeometryShader;
-        GeometryShader = NULL;
+    if (vshader == NULL) {
+        vshader = "shaders/default.vsh";
     }
-
-    if (FragmentShader) {
-        delete FragmentShader;
-        FragmentShader = NULL;
+    if (gshader == NULL) {
+        gshader = "shaders/default.gsh";
     }
-
-    // load and compile vertex shader
-    QFileInfo vsh(vshader);
-    if (vsh.exists()) {
-        VertexShader = new QGLShader(QGLShader::Vertex);
-        if (VertexShader->compileSourceFile(vshader)) {
-            ShaderProgram->addShader(VertexShader);
-        }
-        else {
-            qWarning() << "Vertex Shader Error" << VertexShader->log();
-        }
-    } else {
-        qWarning() << "Vertex Shader source file " << vshader << " not found.";
+    if (fshader == NULL) {
+        fshader = "shaders/default.fsh";
     }
-
-    // load and compile geometry shader
-    QFileInfo gsh(gshader);
-    if (gsh.exists()) {
-        GeometryShader = new QGLShader(QGLShader::Geometry);
-        if (GeometryShader->compileSourceFile(gshader)) {
-            ShaderProgram->addShader(GeometryShader);
-        }
-        else {
-            qWarning() << "Geometry Shader Error" << GeometryShader->log();
-        }
-    } else {
-        qWarning() << "Geometry Shader source file " << gshader << " not found.";
-    }
-
-    // load and compile fragment shader
-    QFileInfo fsh(fshader);
-    if (fsh.exists()) {
-        FragmentShader = new QGLShader(QGLShader::Fragment);
-        if (FragmentShader->compileSourceFile(fshader)) {
-            ShaderProgram->addShader(FragmentShader);
-        }
-        else {
-            qWarning() << "Fragment Shader Error" << FragmentShader->log();
-        }
-    } else {
-        qWarning() << "Fragment Shader source file " << fshader << " not found.";
-    }
+    LoadShader(QGLShader::Vertex, VertexShader, vshader);
+    LoadShader(QGLShader::Geometry, GeometryShader, gshader);
+    LoadShader(QGLShader::Fragment, FragmentShader, fshader);
 
     if (!ShaderProgram->link()) {
         qWarning() << "Shader Program Linker Error" << ShaderProgram->log();

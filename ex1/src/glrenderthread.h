@@ -3,6 +3,7 @@
 
 #include "Geometry.h"
 #include <QThread>
+#include <QGLShader>
 #include <QGLWidget>
 
 class QGLFrame;
@@ -18,7 +19,11 @@ public:
     void resizeViewport(const QSize &size);
     void run(void);
     void stop(void);
-    void LoadShader(QString vshader, QString gshader, QString fshader);
+    void ClearShader(QGLShader * shader);
+    void LoadShader(QGLShader::ShaderTypeBit shader_type, QGLShader * shader, QString file_name);
+    void LoadShaders(QString vshader, QString gshader, QString fshader);
+    void LoadShaders(QString vshader, QString fshader);
+    void LoadShaders();
 
 protected:
     void GLInit(void);
@@ -26,6 +31,7 @@ protected:
     void paintGL(void);
 
 private:
+    QTimer * timer;
     Geometry * suzanne;
     bool doRendering, doResize;
     int w, h, FrameCounter;
