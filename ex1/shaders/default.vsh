@@ -1,4 +1,7 @@
 
-void main(void) {
-    gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;
+in vec3 vertex_position;
+uniform mat4 MVP;
+
+void main() {
+    gl_Position = MVP * vec4(vertex_position, 1.0);
 }

@@ -44,8 +44,10 @@ class Geometry {
         face_t * const g_face(int ind);
         int const g_num_vertices();
         int const g_num_faces();
+        float * const g_model_buffer();
         float * g_centroid();
         float g_bounding_radius();
+        float * g_bounding_cube();
 
         static GLfloat * transformation_matrix(geometric_state_t * state);
         static GLfloat * interp_matrix(std::vector<geometric_state_t *> * states, std::vector<float> * weights);
@@ -62,10 +64,12 @@ class Geometry {
         int cur_vertex;
         float radius;
         float * centroid;
+        float * cube;
 
         Geometry& operator=(Geometry const&);
         void const calc_centroid();
         void const calc_bounding_radius();
+        void const calc_bounding_cube();
 };
 
 #endif

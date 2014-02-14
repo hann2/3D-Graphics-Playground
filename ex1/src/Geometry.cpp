@@ -1,5 +1,6 @@
 
 
+#include <iostream>
 #include <fstream>
 #include <string.h>
 #include <stdlib.h>
@@ -11,78 +12,79 @@
 #define VERTEX_SIZE (sizeof(float) * DIMENSION)
 
 Geometry::Geometry(int num_vertices, int num_faces) {
-    this->cur_face = 0;
-    this->cur_vertex = 0;
+    cur_face = 0;
+    cur_vertex = 0;
     this->num_vertices = num_vertices;
     this->num_faces = num_faces;
-    this->radius = -1.0;
-    this->centroid = NULL;
-    this->vertices = (float *) malloc(num_vertices * VERTEX_SIZE);
-    this->faces = (face_t *) calloc(num_faces, sizeof(face_t));
-    this->bones = NULL;
-    this->weights = NULL;
+    radius = -1.0;
+    centroid = NULL;
+    cube = NULL;
+    vertices = (float *) malloc(num_vertices * VERTEX_SIZE);
+    faces = (face_t *) calloc(num_faces, sizeof(face_t));
+    bones = NULL;
+    weights = NULL;
 }
 
 Geometry::~Geometry() {
-    free(this->vertices);
-    for (int ind = 0; ind < this->cur_face; ind++) {
-        free(this->faces[ind].corners);
+    free(vertices);
+    for (int ind = 0; ind < cur_face; ind++) {
+        free(faces[ind].corners);
     }
-    free(this->faces);
+    free(faces);
 }
 
 void Geometry::add_vertex(float * vertex) {
-    if (this->cur_vertex == this->num_vertices) {
+    if (cur_vertex == num_vertices) {
         printf("Geometry is full, cannot add vertex.\n");
         throw std::out_of_range("out of range");
     }
 
     //copy vertex directly into vertices
-    memcpy(this->vertices + (this->cur_vertex * DIMENSION), vertex, VERTEX_SIZE);
+    memcpy(vertices + (cur_vertex * DIMENSION), vertex, VERTEX_SIZE);
 
-    this->cur_vertex++;
+    cur_vertex++;
 }
 
 void Geometry::add_face(int degree, int * corners) {
-    if (this->cur_face == this->num_faces) {
+    if (cur_face == num_faces) {
         printf("Geometry is full, cannot add face.\n");
         throw std::out_of_range("out of range");
     }
     for (int ind = 0; ind < degree; ind++) {
-        if (corners[ind] < 0 || corners[ind] >= this->cur_vertex) {
+        if (corners[ind] < 0 || corners[ind] >= cur_vertex) {
             printf("vertex %d does not exist, cannot add face\n", corners[ind]);
             throw std::out_of_range("out of range");
         }
     }
-    face_t * face = &this->faces[this->cur_face];
+    face_t * face = &faces[cur_face];
     face->degree = degree;
     face->corners = corners;
 
-    this->cur_face++;
+    cur_face++;
 }
 
 void const Geometry::calc_centroid() {
     float * centroid = (float *) calloc(4, sizeof(float));
-    for (int ind = 0; ind < this->cur_vertex; ind++) {
-        float * v = this->g_vertex(ind);
+    for (int ind = 0; ind < cur_vertex; ind++) {
+        float * v = g_vertex(ind);
         centroid[0] += v[0];
         centroid[1] += v[1];
         centroid[2] += v[2];
     }
-    centroid[0] /= this->cur_vertex;
-    centroid[1] /= this->cur_vertex;
-    centroid[2] /= this->cur_vertex;
-    this->centroid = centroid;
+    centroid[0] /= cur_vertex;
+    centroid[1] /= cur_vertex;
+    centroid[2] /= cur_vertex;
+    centroid = centroid;
 }
 
 void const Geometry::calc_bounding_radius() {
-    if (this->centroid == NULL) {
-        this->calc_centroid();
+    if (centroid == NULL) {
+        calc_centroid();
     }
-    float * centroid = this->centroid;
+    float * centroid = centroid;
     float radius = -1.0;
-    for (int ind = 0; ind < this->cur_vertex; ind++) {
-        float * v = this->g_vertex(ind);
+    for (int ind = 0; ind < cur_vertex; ind++) {
+        float * v = g_vertex(ind);
         float dist = 0;
         for (int ind = 0; ind < DIMENSION; ind++) {
             dist += (centroid[ind] - v[ind]) * (centroid[ind] - v[ind]);
@@ -91,54 +93,118 @@ void const Geometry::calc_bounding_radius() {
             radius = dist;
         }
     }
-    this->radius = sqrt(radius);
+    radius = sqrt(radius);
+}
+
+void const Geometry::calc_bounding_cube() {
+    cube = (float *) malloc(sizeof(float) * 6);
+    float * v = g_vertex(0);
+    cube[0] = v[0];
+    cube[1] = v[0];
+    cube[2] = v[1];
+    cube[3] = v[1];
+    cube[4] = v[2];
+    cube[5] = v[2];
+    for (int ind = 1; ind < cur_vertex; ind++) {
+        float * v = g_vertex(ind);
+        if (v[0] < cube[0]) {
+            cube[0] = v[0];
+        }
+        if (v[0] > cube[1]) {
+            cube[1] = v[0];
+        }
+        if (v[1] < cube[2]) {
+            cube[2] = v[1];
+        }
+        if (v[1] > cube[3]) {
+            cube[3] = v[1];
+        }
+        if (v[2] < cube[4]) {
+            cube[4] = v[2];
+        }
+        if (v[2] > cube[5]) {
+            cube[5] = v[2];
+        }
+    }
 }
 
 float * const Geometry::g_vertex(int ind) {
-    if (ind >= this->cur_vertex || ind < 0) {
-        printf("vertex %d does not exist.\n", ind);
+    if (ind >= cur_vertex || ind < 0) {
+        std::cout << "vertex " << ind << " does not exist.\n";
         throw std::out_of_range("out of range");
     }
-    return this->vertices + (ind * DIMENSION);
+    return vertices + (ind * DIMENSION);
 }
 
 face_t * const Geometry::g_face(int ind) {
-    if (ind >= this->cur_face || ind < 0) {
-        printf("face %d does not exist.\n", ind);
+    if (ind >= cur_face || ind < 0) {
+        std::cout << "face " << ind << " does not exist.\n";
         throw std::out_of_range("out of range");
     }
 
-    return &this->faces[ind];
+    return &faces[ind];
 }
 
 int const Geometry::g_num_vertices() {
-    return this->num_vertices;
+    return num_vertices;
 }
 
 int const Geometry::g_num_faces() {
-    return this->num_faces;
+    return num_faces;
+}
+
+float * const Geometry::g_model_buffer() {
+    if (cur_face < num_faces || cur_vertex < num_vertices) {
+        printf("Fill up geometry before getting model buffer.\n");
+        throw std::out_of_range("out of range");
+    }
+    int face_size = VERTEX_SIZE * 3;
+    float * buffer = (float *) malloc(face_size * g_num_faces());
+    for (int face_ind = 0; face_ind < g_num_faces(); face_ind++) {
+        face_t * face = g_face(face_ind);
+        for (int corner = 0; corner < face->degree; corner++) {
+            float * vert = g_vertex(face->corners[corner]);
+            // these should be equivalent!
+            // memcpy(buffer + face_size * face_ind + VERTEX_SIZE * corner, vert, VERTEX_SIZE);
+            buffer[face_ind * 9 + corner * 3] = vert[0];
+            buffer[face_ind * 9 + corner * 3 + 1] = vert[1];
+            buffer[face_ind * 9 + corner * 3 + 2] = vert[2];
+        }
+    }
+    return buffer;
 }
 
 float * Geometry::g_centroid() {
-    if (this->cur_face < this->num_faces || this->cur_vertex < this->num_vertices) {
+    if (cur_face < num_faces || cur_vertex < num_vertices) {
         printf("Fill up geometry before getting centroid.\n");
         throw std::out_of_range("out of range");
     }
-    if (this->centroid == NULL) {
-        this->calc_centroid();
+    if (centroid == NULL) {
+        calc_centroid();
     }
-    return this->centroid;
+    return centroid;
 }
 
 float Geometry::g_bounding_radius() {
-    if (this->cur_face < this->num_faces || this->cur_vertex < this->num_vertices) {
+    if (cur_face < num_faces || cur_vertex < num_vertices) {
         printf("Fill up geometry before getting radius.\n");
         throw std::out_of_range("out of range");
     }
-    if (this->radius == -1.0) {
-        this->calc_bounding_radius();
+    if (radius == -1.0) {
+        calc_bounding_radius();
     }
-    return this->radius;
+    return radius;
+}
+
+float * Geometry::g_bounding_cube() {
+    if (cur_face < num_faces || cur_vertex < num_vertices) {
+        printf("Fill up geometry before getting radius.\n");
+        throw std::out_of_range("out of range");
+    }
+    if (cube == NULL) {
+        calc_bounding_cube();
+    }
+    return cube;
 }
 
 /**

@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QGLShader>
 #include <QGLWidget>
+#include <glm/glm.hpp>
 
 class QGLFrame;
 class QSize;
@@ -28,11 +29,12 @@ public:
 protected:
     void GLInit(void);
     void GLResize(int width, int height);
-    void paintGL(void);
 
 private:
+    glm::mat4 model_transform;
+    glm::mat4 view_transform;
+    glm::mat4 projection_transform;
     QTimer * timer;
-    Geometry * suzanne;
     bool doRendering, doResize;
     int w, h, FrameCounter;
 
