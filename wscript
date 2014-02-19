@@ -23,7 +23,7 @@ def configure(ctx):
 def build(ctx):
     ctx.program(
         source = 'src/glframe.cpp src/glrenderthread.cpp src/main.cpp src/mainwindow.cpp src/mainwindow.ui src/Geometry.cpp src/load_collada.cpp src/ProceduralGenerator.cpp src/Model.cpp',
-        target = 'wireframe',
+        target = 'demo',
         features = 'qt4 cxx cxxprogram',
         uselib = 'QTCORE QTGUI QTOPENGL QTSVG QWIDGET QTSQL QTUITOOLS QTSCRIPT',
         includes = ['lib'],
