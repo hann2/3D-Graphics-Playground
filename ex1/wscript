@@ -17,12 +17,12 @@ def options(ctx):
 
 def configure(ctx):
     ctx.load('compiler_cxx qt4')
-    ctx.env.CXXFLAGS = ['-c', '-g', '-Wall', '-Werror', '-std=c++11']
+    ctx.env.CXXFLAGS = ['-c', '-O0', '-ggdb', '-Werror', '-std=c++11']
     ctx.env.LINKFLAGS = []
 
 def build(ctx):
     ctx.program(
-        source = 'src/glframe.cpp src/glrenderthread.cpp src/main.cpp src/mainwindow.cpp src/mainwindow.ui src/Geometry.cpp src/load_collada.cpp src/ProceduralGenerator.cpp',
+        source = 'src/glframe.cpp src/glrenderthread.cpp src/main.cpp src/mainwindow.cpp src/mainwindow.ui src/Geometry.cpp src/load_collada.cpp src/ProceduralGenerator.cpp src/Model.cpp',
         target = 'wireframe',
         features = 'qt4 cxx cxxprogram',
         uselib = 'QTCORE QTGUI QTOPENGL QTSVG QWIDGET QTSQL QTUITOOLS QTSCRIPT',

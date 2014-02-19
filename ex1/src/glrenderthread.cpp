@@ -1,5 +1,6 @@
 
 #include <GL/glew.h>
+
 #include <QFileInfo>
 
 #include "glframe.h"
@@ -12,6 +13,9 @@
 #include <stdlib.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "ProceduralGenerator.h"
+#include <string>
+#include <fstream>
+#include <streambuf>
 
 // fps in hz
 #define FRAME_RATE 60
@@ -25,9 +29,6 @@ QGLRenderThread::QGLRenderThread(QGLFrame *parent) :
     doRendering = true;
     doResize = false;
     FrameCounter = 0;
-
-    ShaderProgram = NULL;
-    VertexShader = GeometryShader = FragmentShader = NULL;
 }
 
 void QGLRenderThread::resizeViewport(const QSize &size) {
@@ -40,7 +41,7 @@ void QGLRenderThread::stop() {
     doRendering = false;
 }
 
-void QGLRenderThread::run() {
+void QGLRenderThread::init_gl_context() {
     GLFrame->makeCurrent();
 
     glewExperimental = GL_TRUE; 
@@ -50,52 +51,18 @@ void QGLRenderThread::run() {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
 
-    view_transform = glm::lookAt(glm::vec3(5,0,0), glm::vec3(0,0,0), glm::vec3(0,1,0));
-    model_transform = glm::mat4(1.0f);
+    models = std::vector<Model *>();
+}
 
-    Geometry * suzanne = load_collada("assets/models/suzanne.dae");
-    LoadShaders("shaders/textured.vsh", NULL, "shaders/textured.fsh");
+void QGLRenderThread::run() {
 
-    int model_size = sizeof(float) * 3 * 3 * suzanne->g_num_faces();
-    float * model = suzanne->g_model_buffer();
-
-    GLuint vertexbuffer;
-    glGenBuffers(1, &vertexbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, model_size, model, GL_STATIC_DRAW);
-
-    int texture_size = sizeof(float) * 2 * 3 * suzanne->g_num_faces();
-    float * texture_coords = (float *) malloc(texture_size);
-    for (int face_ind = 0; face_ind < suzanne->g_num_faces(); face_ind++) {
-        for (int corner = 0; corner < 3; corner++) {
-            texture_coords[face_ind * 6 + corner * 2] = model[face_ind * 9 + corner * 3];
-            texture_coords[face_ind * 6 + corner * 2 + 1] = model[face_ind * 9 + corner * 3 + 2];
-        }
-    }
-
-    GLuint uvbuffer;
-    glGenBuffers(1, &uvbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-    glBufferData(GL_ARRAY_BUFFER, texture_size, texture_coords, GL_STATIC_DRAW);
-
-    GLuint tex;
-    float * noise = grass_texture();
-    glGenTextures(1, &tex);
-    glBindTexture(GL_TEXTURE_2D, tex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 256, 256, 0, GL_RED, GL_FLOAT, noise);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    GLuint texture_id  = glGetUniformLocation(ShaderProgram->programId(), "texture_sampler");
-    GLuint matrix_id = glGetUniformLocation(ShaderProgram->programId(), "MVP");
+    init_gl_context();
+    load_procedural_scene();
 
     while (doRendering) {
         long int start = QDateTime::currentMSecsSinceEpoch();
@@ -105,30 +72,19 @@ void QGLRenderThread::run() {
         }
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        model_transform = glm::rotate(glm::mat4(1.0f), (float)FrameCounter, glm::vec3(1.0f));
-        glm::mat4 MVP = projection_transform * view_transform * model_transform;
-        glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &MVP[0][0]);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, tex);
-        glUniform1i(texture_id, 0);
-
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-
-        glDrawArrays(GL_TRIANGLES, 0, model_size);
-        glDisableVertexAttribArray(0);
+        for (Model * model : models) {
+            model->render_model();
+        }
 
         FrameCounter++;
         GLFrame->swapBuffers();
 
-        if (glGetError() != GL_NO_ERROR) {
-            std::cout << "Error!\n";
+        GLenum errCode;
+        if ((errCode = glGetError()) != GL_NO_ERROR) {
+            std::cout << "OpenGL error!\n";
+            std::cout << gluErrorString(errCode) << "\n";
+            doRendering = false;
         }
 
         int time_elapsed = QDateTime::currentMSecsSinceEpoch() - start;
@@ -139,60 +95,222 @@ void QGLRenderThread::run() {
     }
 }
 
+void QGLRenderThread::load_procedural_scene() {
+    GLint grass_shader = load_shaders("shaders/grass.vsh", "", "shaders/grass.fsh");
+    Model * terrain_model = Model::create_model(grass_shader);
+
+    int mesh_size = 64;
+    float * terrain = terrain_height(mesh_size, mesh_size);
+    float tex_step = 1.0 / (mesh_size - 1);
+
+    Geometry geometry(mesh_size * mesh_size, (mesh_size - 1) * (mesh_size - 1) * 2);
+
+    for (int i = 0; i < mesh_size; i++) {
+        for (int j = 0; j < mesh_size; j++) {
+            float vertex [] = {
+                (float)i,
+                terrain[i * mesh_size + j] * 20,
+                (float)j
+            };
+            float texture_coord [] = {
+                i * tex_step,
+                j * tex_step
+            };
+            geometry.add_vertex(&vertex[0]);
+            geometry.add_tex_coord(geometry.g_num_vertices() - 1, &texture_coord[0]);
+        }
+    }
+
+    for (int i = 0; i < mesh_size - 1; i++) {
+        for (int j = 0; j < mesh_size - 1; j++) {
+            int face1 [] = {
+                i * mesh_size + j,
+                i * mesh_size + j + 1,
+                (i + 1) * mesh_size + j + 1
+            };
+            int face2 [] = {
+                (i + 1) * mesh_size + j + 1,
+                (i + 1) * mesh_size + j,
+                i * mesh_size + j
+            };
+            geometry.add_face(3, &face1[0]);
+            geometry.add_face(3, &face2[0]);
+        }
+    }
+
+    float * terrain_mesh = geometry.g_model_buffer();
+    float * terrain_normals = geometry.g_normals_buffer();
+    float * terrain_tex_coords = geometry.g_tex_buffer();
+    int terrain_mesh_size = geometry.g_model_buffer_size();
+    int terrain_normals_size = geometry.g_normals_buffer_size();
+    int terrain_tex_buffer_size = geometry.g_tex_buffer_size();
+
+    terrain_model->add_attribute(terrain_mesh, terrain_mesh_size, 3, "vertex_position");
+    terrain_model->add_attribute(terrain_normals, terrain_normals_size, 3, "vertex_normal");
+    terrain_model->add_attribute(terrain_tex_coords, terrain_tex_buffer_size, 2, "vertex_UV");
+
+    float * grass_text = grass_texture(256, 256);
+    terrain_model->add_texture(grass_text, 256, 256, GL_FLOAT, 1, "texture_sampler");
+
+    // glm::vec3 suzanne_location = glm::vec3(32.0f, terrain[32 * mesh_size + 30] * 20 + 1.0f, 30.0f);
+    glm::mat4 view_transform = glm::lookAt(glm::vec3(-20,60,-20), glm::vec3(32, 0, 32), glm::vec3(0,1,0));
+    glm::mat4 projection_transform = glm::perspective(45.0f, ((float)w) / h, 0.1f, 1000.0f);
+    glm::mat4 model_transform = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f));
+    glm::mat4 mvp = projection_transform * view_transform * model_transform;
+    // put matrix in the heap so it doesnt get deallocated
+    GLfloat * copied_data = (GLfloat *) malloc(sizeof(float) * 16);
+    memcpy(copied_data, &mvp[0][0], sizeof(float) * 16);
+    terrain_model->add_uniform_matrix("MVP", copied_data);
+    models.push_back(terrain_model);
+
+    free(terrain_mesh);
+    free(terrain_normals);
+    free(terrain_tex_coords);
+    free(grass_text);
+
+    // GLint wireframe_shader = load_shaders("shaders/default.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
+    // Model * suzanne_model = Model::create_model(wireframe_shader);
+    // Geometry * suzanne_geometry = load_collada("assets/models/suzanne.dae");
+
+    // float * suzanne_mesh = suzanne_geometry->g_model_buffer();
+    // suzanne_model->add_attribute(suzanne_mesh, suzanne_geometry->g_model_buffer_size(), 3, "vertex_position");
+    // model_transform = glm::translate(glm::mat4(), suzanne_location);
+    // mvp = projection_transform * view_transform * model_transform;
+    
+    // copied_data = (GLfloat *) malloc(sizeof(float) * 16);
+    // memcpy(copied_data, &mvp[0][0], sizeof(float) * 16);
+    // suzanne_model->add_uniform_matrix("MVP", copied_data);
+    // models.push_back(suzanne_model);
+
+    // free(suzanne_mesh);
+    // delete suzanne_geometry;
+}
+
+void QGLRenderThread::load_perlin_demo() {
+    GLint topo_shader = load_shaders("shaders/textured.vsh", "", "shaders/topo.fsh");
+    GLint grass_shader = load_shaders("shaders/textured.vsh", "", "shaders/grass.fsh");
+    GLint no_shader = load_shaders("shaders/textured.vsh", "", "shaders/topo.fsh");
+    float g_vertex_buffer_data[] = { 
+        -1.0f, -1.0f, 0.0f,
+        1.0f,  -1.0f, 0.0f,
+        1.0f,  1.0f,  0.0f,
+        1.0f,  1.0f,  0.0f,
+        -1.0f, 1.0f,  0.0f,
+        -1.0f, -1.0f, 0.0f
+    };
+    float g_uv_buffer_data[] = {
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+        1.0f, 1.0f,
+        1.0f, 1.0f,
+        0.0f, 1.0f,
+        0.0f, 0.0f
+    };
+
+    glm::mat4 view_transform = glm::lookAt(glm::vec3(4,4,10), glm::vec3(0,0,0), glm::vec3(0,1,0));
+    glm::mat4 projection_transform = glm::perspective(45.0f, ((float)w) / h, 0.1f, 1000.0f);
+
+    float * empty = (float *) calloc(256 * 256, sizeof(float));
+    float * texture_data [][3] = {
+        {empty,                   empty, bark_test(256, 256)},
+        {empty, grass_texture(256, 256), bark_texture(256, 256)},
+        {empty,                   empty, terrain_height(256, 256)}
+    };
+    GLint shaders [][3] = {
+        {no_shader,    no_shader, no_shader},
+        {no_shader, grass_shader, no_shader},
+        {no_shader,    no_shader, topo_shader}
+    };
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            Model * model = Model::create_model(shaders[i][j]);
+            model->add_attribute(&g_vertex_buffer_data[0], sizeof(g_vertex_buffer_data), 3, "vertex_position");
+            model->add_attribute(&g_uv_buffer_data[0], sizeof(g_uv_buffer_data), 2, "vertex_UV");
+            model->add_texture(texture_data[i][j], 256, 256, GL_FLOAT, 1, "texture_sampler");
+
+            glm::mat4 model_transform = glm::translate(glm::mat4(), glm::vec3((i - 1) * 2.4f, (j - 1) * 2.4f, 0.0f));
+            glm::mat4 mvp = projection_transform * view_transform * model_transform;
+            // put matrix in the heap so it doesnt get deallocated
+            GLfloat * copied_data = (GLfloat *) malloc(sizeof(float) * 16);
+            memcpy(copied_data, &mvp[0][0], sizeof(float) * 16);
+            model->add_uniform_matrix("MVP", copied_data);
+            models.push_back(model);
+        }
+    }
+}
 
 void QGLRenderThread::GLResize(int width, int height) {
     glViewport(0, 0, width, height);
-    projection_transform = glm::perspective(45.0f, ((float)width) / height, 0.1f, 1000.0f);
 }
 
-void QGLRenderThread::ClearShader(QGLShader * shader) {
-    if (shader) {
-        delete shader;
-        shader = NULL;
-    }
+
+std::string read_file(std::string file_name) {
+    std::ifstream t(file_name);
+    std::string str;
+
+    t.seekg(0, std::ios::end);   
+    str.reserve(t.tellg());
+    t.seekg(0, std::ios::beg);
+
+    str.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+
+    return str;
 }
 
-void QGLRenderThread::LoadShader(QGLShader::ShaderTypeBit shader_type, QGLShader * shader, QString file_name) {
-    QFileInfo vsh(file_name);
-    if (vsh.exists()) {
-        shader = new QGLShader(shader_type);
-        if (shader->compileSourceFile(file_name)) {
-            ShaderProgram->addShader(shader);
-        }
-        else {
-            qWarning() << "Shader Error with " << file_name << ",\n" << shader->log();
-        }
-    } else {
-        qWarning() << "Shader source file " << file_name << " not found.";
+GLuint QGLRenderThread::load_shader(std::string file_name, GLenum shader_type) {
+    GLuint id = glCreateShader(shader_type);
+    std::string shader_code = read_file(file_name);
+
+    char const * source_pointer = shader_code.c_str();
+    glShaderSource(id, 1, &source_pointer , NULL);
+    glCompileShader(id);
+
+    int log_length;
+    GLint result = GL_FALSE;
+    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+    glGetShaderiv(id, GL_INFO_LOG_LENGTH, &log_length);
+    if ( log_length > 0 ){
+        char * error_message = (char *) calloc(log_length + 1, sizeof(char));
+        glGetShaderInfoLog(id, log_length, NULL, error_message);
+        printf("%s\n", error_message);
+        free(error_message);
     }
+
+    return id;
 }
 
-void QGLRenderThread::LoadShaders(QString vshader, QString gshader, QString fshader) {
-    if (ShaderProgram) {
-        ShaderProgram->release();
-        ShaderProgram->removeAllShaders();
-    } else {
-        ShaderProgram = new QGLShaderProgram;
+GLuint QGLRenderThread::load_shaders(std::string v_file, std::string g_file, std::string f_file) {
+    GLuint program_id = glCreateProgram();
+
+    GLuint v_id = load_shader(v_file, GL_VERTEX_SHADER);
+    glAttachShader(program_id, v_id);
+    GLuint g_id;
+    if (g_file != "") {
+        g_id = load_shader(g_file, GL_GEOMETRY_SHADER);
+        glAttachShader(program_id, g_id);
+    }
+    GLuint f_id = load_shader(f_file, GL_FRAGMENT_SHADER);
+    glAttachShader(program_id, f_id);
+
+    glLinkProgram(program_id);
+
+    int log_length;
+    GLint result = GL_FALSE;
+    glGetProgramiv(program_id, GL_LINK_STATUS, &result);
+    glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &log_length);
+    if ( log_length > 0 ){
+        char * error_message = (char *) calloc(log_length + 1, sizeof(char));
+        glGetProgramInfoLog(program_id, log_length, NULL, error_message);
+        printf("%s\n", error_message);
+        free(error_message);
     }
 
-    ClearShader(VertexShader);
-    ClearShader(GeometryShader);
-    ClearShader(FragmentShader);
+    glDeleteShader(v_id);
+    if (g_file != "") {
+        glDeleteShader(g_id);
+    }
+    glDeleteShader(f_id);
 
-    if (vshader != NULL) {
-        LoadShader(QGLShader::Vertex, VertexShader, vshader);
-    }
-    if (gshader != NULL) {
-        LoadShader(QGLShader::Geometry, GeometryShader, gshader);
-    }
-    if (fshader != NULL) {
-        LoadShader(QGLShader::Fragment, FragmentShader, fshader);
-    }
-    
-
-    if (!ShaderProgram->link()) {
-        qWarning() << "Shader Program Linker Error" << ShaderProgram->log();
-    } else {
-        ShaderProgram->bind();
-    }
+    return program_id;
 }

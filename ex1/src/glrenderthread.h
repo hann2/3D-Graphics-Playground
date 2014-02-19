@@ -1,7 +1,8 @@
 #ifndef GLRENDERTHREAD_H
 #define GLRENDERTHREAD_H
 
-#include "Geometry.h"
+#include "Model.h"
+
 #include <QThread>
 #include <QGLShader>
 #include <QGLWidget>
@@ -18,30 +19,24 @@ class QGLRenderThread : public QThread
 public:
     explicit QGLRenderThread(QGLFrame *parent = 0);
     void resizeViewport(const QSize &size);
-    void run(void);
-    void stop(void);
-    void ClearShader(QGLShader * shader);
-    void LoadShader(QGLShader::ShaderTypeBit shader_type, QGLShader * shader, QString file_name);
-    void LoadShaders(QString vshader, QString gshader, QString fshader);
-    void LoadShaders(QString vshader, QString fshader);
-    void LoadShaders();
+    void init_gl_context();
+    void run();
+    void stop();
+    GLuint load_shader(std::string file_name, GLenum shader_type);
+    GLuint load_shaders(std::string v_file, std::string g_file, std::string f_file);
 
 protected:
-    void GLInit(void);
     void GLResize(int width, int height);
 
 private:
-    glm::mat4 model_transform;
-    glm::mat4 view_transform;
-    glm::mat4 projection_transform;
+    void load_procedural_scene();
+    void load_perlin_demo();
     QTimer * timer;
     bool doRendering, doResize;
     int w, h, FrameCounter;
+    std::vector<Model *> models;
 
     QGLFrame *GLFrame;
-
-    QGLShaderProgram *ShaderProgram;
-    QGLShader *VertexShader, *GeometryShader, *FragmentShader;
 
 signals:
 

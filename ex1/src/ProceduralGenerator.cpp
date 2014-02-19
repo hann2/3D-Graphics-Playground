@@ -19,34 +19,97 @@ float perlin_noise(float x, float y, float persistance, int octaves) {
     return sum;
 }
 
-
-float * grass_texture() {
-    const float kernel[3][3] = {
-        {1/16.0, 1/8.0, 1/16.0},
-        {1/8.0, 1/4.0, 1/8.0},
-        {1/16.0, 1/8.0, 1/16.0}
-    };
-    float * noise = (float *) malloc(sizeof(float) * 256 * 256);
-    for (int x = 0; x < 256; x++) {
-        for (int y = 0; y < 256; y++) {
-            float sum = 0.0;
-            // 3 x 3 gaussian blur
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j <= 3; j++) {
-                    sum += perlin_noise((x + i) / 16.0f, (y + j) / 16.0f, 0.8, 3) * kernel[i][j];
-                }
+// makes everything between 0.0 and 1.0
+void normalize_image(float * image, int width, int height) {
+    float min = image[0];
+    float max = image[0];
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+            float el = image[i * width + j];
+            if (min > el) {
+                min = el;
             }
-            noise[x * 256 + y] =sum;
+            if (max < el) {
+                max = el;
+            }
         }
     }
+    float scale = max - min;
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+            image[i * width + j] = (image[i * width + j] - min) / scale;
+        }
+    }
+}
+
+// give given size, not desired size
+float * apply_filter(float * image, int image_w, int image_h, float * filter, int filter_w, int filter_h) {
+    int filtered_w = image_w - (filter_w / 2) * 2;
+    int filtered_h = image_h - (filter_h / 2) * 2;
+
+    float * filtered = (float *) malloc(sizeof(float) * filtered_w * filtered_h);
+
+    for (int i = 0; i < filtered_w; i++) {
+        for (int j = 0; j < filtered_h; j++) {
+            float sum = 0.0f;
+            for (int k = 0; k < filter_w; k++) {
+                for (int l = 0; l < filter_h; l++) {
+                    sum += filter[k * filter_w + l] * image[(i + k) * image_w + (j + l)];
+                }
+            }
+            filtered[i * filtered_w + j] = sum;
+        }
+    }
+
+    return filtered;        
+}
+
+void sqrt_img(float * image, int width, int height) {
+    for (int i = 0; i < width * height; i++) {
+        image[i] = sqrt(image[i]);
+    }       
+}
+
+void sqr_img(float * image, int width, int height) {
+    for (int i = 0; i < width * height; i++) {
+        image[i] = image[i] * image[i];
+    }       
+}
+
+
+float * grass_texture(int width, int height) {
+    float * noise = (float *) malloc(sizeof(float) * width * height);
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+            noise[x * width + y] = perlin_noise(x/64.0f, y/64.0f, 0.8, 8);
+        }
+    }
+    normalize_image(noise, width, height);
     return noise;
 }
 
-float * terrain_height() {
-    return NULL;
+float * terrain_height(int width, int height) {
+    float * noise = (float *) malloc(sizeof(float) * width * height);
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+            noise[x * width + y] = perlin_noise((x + 0.3)/63.2f, (y + 0.7)/63.8f, 0.5, 10);
+        }
+    }
+    normalize_image(noise, width, height);
+    return noise;
 }
 
-float * bark_texture() {
-    return NULL;
+float * bark_texture(int width, int height) {
+    float * noise = (float *) malloc(sizeof(float) * width * height);
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+            noise[x * width + y] = perlin_noise((x + 0.3)/15.7f, (y + 0.7)/63.8f, 0.5, 10);
+        }
+    }
+    normalize_image(noise, width, height);
+    return noise;
 }
 
+float * bark_test(int width, int height) {
+    return (float *) calloc(width * height, sizeof(float));
+}

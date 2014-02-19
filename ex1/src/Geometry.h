@@ -39,21 +39,27 @@ class Geometry {
 
         void add_vertex(float * vertex);
         void add_face(int degree, int * corners);
+        void add_tex_coord(int ind, float * coords);
 
-        float * const g_vertex(int ind);
-        face_t * const g_face(int ind);
-        int const g_num_vertices();
-        int const g_num_faces();
-        float * const g_model_buffer();
-        float * g_centroid();
-        float g_bounding_radius();
+        float * g_vertex(int ind);
+        face_t * g_face(int ind);
+        float * g_tex_coord(int ind);
+        int g_num_vertices();
+        int g_num_faces();
+        int g_model_buffer_size();
+        int g_normals_buffer_size();
+        int g_tex_buffer_size();
+        float * g_model_buffer();
+        float * g_normals_buffer();
+        float * g_tex_buffer();
+        float * g_bounding_sphere();
         float * g_bounding_cube();
-
-        static GLfloat * transformation_matrix(geometric_state_t * state);
-        static GLfloat * interp_matrix(std::vector<geometric_state_t *> * states, std::vector<float> * weights);
+        void normalize_vec(float * v);
+        float * g_face_normal(int face_ind);
 
     private:
         float * vertices;
+        float * tex_coords;
         face_t * faces;
         bone_t * bones;
         vertex_weights_t * weights;
@@ -62,14 +68,6 @@ class Geometry {
         int num_faces;
         int cur_face;
         int cur_vertex;
-        float radius;
-        float * centroid;
-        float * cube;
-
-        Geometry& operator=(Geometry const&);
-        void const calc_centroid();
-        void const calc_bounding_radius();
-        void const calc_bounding_cube();
 };
 
 #endif
