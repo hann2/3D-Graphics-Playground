@@ -20,16 +20,16 @@ Geometry * TreeGenerator::generate_tree() {
     branch_params_t b1 = {
         .alpha = 30.0,
         .phi = 70.0,
-        .s_scale = 0.8,
+        .s_scale = 0.9,
         .w_scale = (float) pow(q, e)
     };
     branch_params_t b2 = {
         .alpha = -50.0,
         .phi = 100.0,
-        .s_scale = 0.7,
+        .s_scale = 0.8,
         .w_scale = (float) pow(1 - q, e)
     };
-    TreeGenerator t(Turtle(), Skeleton(), b1, b2, 0.25);
+    TreeGenerator t(Turtle(), Skeleton(), b1, b2, 0.20);
     t.generate_tree_h(1.0, 0.2);
     return t.skeleton.generate_mesh();
 }
@@ -47,7 +47,7 @@ void TreeGenerator::generate_tree_h(float s, float w) {
     }
 
     // scale for length and radius of cylinder
-    glm::mat4 bone_state = *turtle.peek_state() * glm::translate(glm::scale(glm::mat4(), glm::vec3(w,w,s)), glm::vec3(0.0f,0.0f,0.5f * s));
+    glm::mat4 bone_state = *turtle.peek_state() * glm::translate(glm::mat4(), glm::vec3(0.0f,0.0f,0.5f * s)) * glm::scale(glm::mat4(), glm::vec3(w,w,s));
     int bone_ind = skeleton.add_bone(parent, bone_state);
     turtle.forward(s);
 

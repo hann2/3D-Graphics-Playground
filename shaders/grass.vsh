@@ -8,7 +8,7 @@ in vec2 vertex_UV;
 out vec2 UV;
 out float light;
 
-const vec3 SUN_DIR = vec3(0.0f, 1.0f, 0.0f);
+const vec3 SUN_DIR = normalize(vec3(1.0f, 4.0f, 1.0f));
 
 void main() {
     gl_Position = MVP * vec4(vertex_position, 1.0);

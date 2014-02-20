@@ -96,7 +96,7 @@ float * grass_texture(int width, int height) {
     float * noise = (float *) malloc(sizeof(float) * width * height);
     for (int x = 0; x < width; x++) {
         for (int y = 0; y < height; y++) {
-            noise[x * width + y] = perlin_noise(x/64.0f, y/64.0f, 0.8, 8);
+            noise[x * width + y] = perlin_noise((x + 0.3)/63.2f, (y + 0.7)/63.8f, 0.8, 8);
         }
     }
     normalize_image(noise, width, height);

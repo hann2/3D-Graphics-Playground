@@ -175,7 +175,7 @@ void QGLRenderThread::load_procedural_scene() {
     terrain_model->add_texture(grass_text, 256, 256, GL_FLOAT, 1, "texture_sampler");
 
     // // glm::vec3 suzanne_location = glm::vec3(32.0f, terrain[32 * mesh_size + 30] * 20 + 1.0f, 30.0f);
-    glm::mat4 view_transform = glm::lookAt(glm::vec3(50,30,10), glm::vec3(32, 10, 32), glm::vec3(0,1,0));
+    glm::mat4 view_transform = glm::lookAt(glm::vec3(50,20,10), glm::vec3(32, 10, 32), glm::vec3(0,1,0));
     glm::mat4 projection_transform = glm::perspective(45.0f, ((float)w) / h, 0.1f, 1000.0f);
     glm::mat4 model_transform = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f));
     glm::mat4 mvp = projection_transform * view_transform * model_transform;
@@ -229,7 +229,7 @@ void QGLRenderThread::load_perlin_demo() {
         0.0f, 0.0f
     };
 
-    glm::mat4 view_transform = glm::lookAt(glm::vec3(20,10,-20), glm::vec3(0,0,0), glm::vec3(0,1,0));
+    glm::mat4 view_transform = glm::lookAt(glm::vec3(4,4,10), glm::vec3(0,0,0), glm::vec3(0,1,0));
     glm::mat4 projection_transform = glm::perspective(45.0f, ((float)w) / h, 0.1f, 1000.0f);
 
     float * empty = (float *) calloc(256 * 256, sizeof(float));
@@ -267,7 +267,7 @@ void QGLRenderThread::load_turtle_demo() {
     float * tree_mesh = tree_geometry->g_model_buffer();
     tree_model->add_attribute(tree_mesh, tree_geometry->g_model_buffer_size(), 3, "vertex_position");
 
-    glm::mat4 view_transform = glm::lookAt(glm::vec3(1,6,8), glm::vec3(0,3,0), glm::vec3(0,1,0));
+    glm::mat4 view_transform = glm::lookAt(glm::vec3(2,3,12), glm::vec3(0,3,0), glm::vec3(0,1,0));
     glm::mat4 projection_transform = glm::perspective(45.0f, ((float)w) / h, 0.1f, 1000.0f);
     glm::mat4 model_transform = glm::rotate(glm::mat4(), -90.0f, glm::vec3(1.0, 0.0, 0.0));
     glm::mat4 mvp = projection_transform * view_transform * model_transform;
