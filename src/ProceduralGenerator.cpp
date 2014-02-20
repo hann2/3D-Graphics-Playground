@@ -5,6 +5,21 @@
 #include <math.h>
 #include <iostream>
 
+// TODO: implement these ...
+// function bias(b, value)
+// {
+//   return (value / ((((1.0/b) - 2.0)*(1.0 - value))+1.0));
+// }
+
+// function gain(g, value)
+// {
+//   if(value < 0.5) {
+//     return bias(g, value * 2.0)/2.0;
+//   } else {
+//     return bias(1.0 - g, value * 2.0 - 1.0)/2.0 + 0.5;
+//   }
+// }
+
 float perlin_noise(float x, float y, float persistance, int octaves) {
     float frequency = 1.0;
     float amplitude = 1.0;

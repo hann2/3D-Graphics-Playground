@@ -85,16 +85,19 @@ void Model::add_uniform_matrix(std::string matrix_name, GLfloat * data) {
         return;
     }
 
+    GLfloat * copied_data = (GLfloat *) malloc(sizeof(float) * 16);
+    memcpy(copied_data, data, sizeof(float) * 16);
+
     if (matrices.count(matrix_name) == 0) {
         model_matrix_t matrix = {
-            .matrix_data = data,
+            .matrix_data = copied_data,
             .matrix_id = matrix_location
         };
         matrices.emplace(matrix_name, matrix);
     } else {
         model_matrix_t m = matrices.at(matrix_name);
         free(m.matrix_data);
-        m.matrix_data = data;
+        m.matrix_data = copied_data;
     }
 }
 
@@ -106,13 +109,13 @@ void Model::render_model() {
         glUniformMatrix4fv(matrix.matrix_id, 1, GL_FALSE, matrix.matrix_data);
     }
 
-    for (auto texture : textures) {
+    for (model_texture_t texture : textures) {
         glActiveTexture(texture.texture_unit);
         glBindTexture(GL_TEXTURE_2D, texture.texture_id);
         glUniform1i(texture.texture_uniform_id, 0);
     }
 
-    for (auto attribute : attributes) {
+    for (model_attribute_t attribute : attributes) {
         glEnableVertexAttribArray(attribute.attribute_id);
         glBindBuffer(GL_ARRAY_BUFFER, attribute.buffer_id);
         glVertexAttribPointer(attribute.attribute_id, attribute.num_channels, GL_FLOAT, GL_FALSE, 0, (void *) 0);
@@ -120,7 +123,7 @@ void Model::render_model() {
 
     glDrawArrays(GL_TRIANGLES, 0, model_size);
 
-    for (auto attribute : attributes) {
+    for (model_attribute_t attribute : attributes) {
         glDisableVertexAttribArray(attribute.attribute_id);
     }
 

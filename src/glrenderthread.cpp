@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "ProceduralGenerator.h"
+#include "TreeGenerator.h"
 #include <string>
 #include <fstream>
 #include <streambuf>
@@ -95,6 +96,27 @@ void QGLRenderThread::run() {
     }
 }
 
+
+
+void QGLRenderThread::load_wireframe_scene() {
+    GLint wire_shader = load_shaders("shaders/default.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
+
+    Model * suzanne_model = Model::create_model(wire_shader);
+    Geometry * suzanne_geometry = load_collada("assets/models/suzanne.dae");
+    float * suzanne_mesh = suzanne_geometry->g_model_buffer();
+    suzanne_model->add_attribute(suzanne_mesh, suzanne_geometry->g_model_buffer_size(), 3, "vertex_position");
+
+    glm::mat4 view_transform = glm::lookAt(glm::vec3(1,3,8), glm::vec3(0,0,0), glm::vec3(0,1,0));
+    glm::mat4 projection_transform = glm::perspective(45.0f, ((float)w) / h, 0.1f, 1000.0f);
+    glm::mat4 model_transform = glm::mat4();
+    glm::mat4 mvp = projection_transform * view_transform * model_transform;
+    suzanne_model->add_uniform_matrix("MVP", &mvp[0][0]);
+    models.push_back(suzanne_model);
+
+    free(suzanne_mesh);
+    delete suzanne_geometry;
+}
+
 void QGLRenderThread::load_procedural_scene() {
     GLint grass_shader = load_shaders("shaders/grass.vsh", "", "shaders/grass.fsh");
     Model * terrain_model = Model::create_model(grass_shader);
@@ -152,15 +174,12 @@ void QGLRenderThread::load_procedural_scene() {
     float * grass_text = grass_texture(256, 256);
     terrain_model->add_texture(grass_text, 256, 256, GL_FLOAT, 1, "texture_sampler");
 
-    // glm::vec3 suzanne_location = glm::vec3(32.0f, terrain[32 * mesh_size + 30] * 20 + 1.0f, 30.0f);
-    glm::mat4 view_transform = glm::lookAt(glm::vec3(-20,60,-20), glm::vec3(32, 0, 32), glm::vec3(0,1,0));
+    // // glm::vec3 suzanne_location = glm::vec3(32.0f, terrain[32 * mesh_size + 30] * 20 + 1.0f, 30.0f);
+    glm::mat4 view_transform = glm::lookAt(glm::vec3(50,30,10), glm::vec3(32, 10, 32), glm::vec3(0,1,0));
     glm::mat4 projection_transform = glm::perspective(45.0f, ((float)w) / h, 0.1f, 1000.0f);
     glm::mat4 model_transform = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f));
     glm::mat4 mvp = projection_transform * view_transform * model_transform;
-    // put matrix in the heap so it doesnt get deallocated
-    GLfloat * copied_data = (GLfloat *) malloc(sizeof(float) * 16);
-    memcpy(copied_data, &mvp[0][0], sizeof(float) * 16);
-    terrain_model->add_uniform_matrix("MVP", copied_data);
+    terrain_model->add_uniform_matrix("MVP", &mvp[0][0]);
     models.push_back(terrain_model);
 
     free(terrain_mesh);
@@ -168,22 +187,25 @@ void QGLRenderThread::load_procedural_scene() {
     free(terrain_tex_coords);
     free(grass_text);
 
-    // GLint wireframe_shader = load_shaders("shaders/default.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
-    // Model * suzanne_model = Model::create_model(wireframe_shader);
-    // Geometry * suzanne_geometry = load_collada("assets/models/suzanne.dae");
 
-    // float * suzanne_mesh = suzanne_geometry->g_model_buffer();
-    // suzanne_model->add_attribute(suzanne_mesh, suzanne_geometry->g_model_buffer_size(), 3, "vertex_position");
-    // model_transform = glm::translate(glm::mat4(), suzanne_location);
-    // mvp = projection_transform * view_transform * model_transform;
-    
-    // copied_data = (GLfloat *) malloc(sizeof(float) * 16);
-    // memcpy(copied_data, &mvp[0][0], sizeof(float) * 16);
-    // suzanne_model->add_uniform_matrix("MVP", copied_data);
-    // models.push_back(suzanne_model);
+    GLint wire_shader = load_shaders("shaders/default.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
 
-    // free(suzanne_mesh);
-    // delete suzanne_geometry;
+    Model * tree_model = Model::create_model(wire_shader);
+    Geometry * tree_geometry = TreeGenerator::generate_tree();
+    float * tree_mesh = tree_geometry->g_model_buffer();
+    tree_model->add_attribute(tree_mesh, tree_geometry->g_model_buffer_size(), 3, "vertex_position");
+
+    model_transform =
+        glm::translate(glm::mat4(), glm::vec3(32.0, terrain[32 * mesh_size + 32] * 20, 32.0)) *
+        glm::scale(glm::mat4(), glm::vec3(2, 2, 2)) *
+        glm::rotate(glm::mat4(), -90.0f, glm::vec3(1.0, 0.0, 0.0));
+    mvp = projection_transform * view_transform * model_transform;
+    tree_model->add_uniform_matrix("MVP", &mvp[0][0]);
+    models.push_back(tree_model);
+
+    free(tree_mesh);
+    free(terrain);
+    delete tree_geometry;
 }
 
 void QGLRenderThread::load_perlin_demo() {
@@ -207,7 +229,7 @@ void QGLRenderThread::load_perlin_demo() {
         0.0f, 0.0f
     };
 
-    glm::mat4 view_transform = glm::lookAt(glm::vec3(4,4,10), glm::vec3(0,0,0), glm::vec3(0,1,0));
+    glm::mat4 view_transform = glm::lookAt(glm::vec3(20,10,-20), glm::vec3(0,0,0), glm::vec3(0,1,0));
     glm::mat4 projection_transform = glm::perspective(45.0f, ((float)w) / h, 0.1f, 1000.0f);
 
     float * empty = (float *) calloc(256 * 256, sizeof(float));
@@ -231,13 +253,29 @@ void QGLRenderThread::load_perlin_demo() {
 
             glm::mat4 model_transform = glm::translate(glm::mat4(), glm::vec3((i - 1) * 2.4f, (j - 1) * 2.4f, 0.0f));
             glm::mat4 mvp = projection_transform * view_transform * model_transform;
-            // put matrix in the heap so it doesnt get deallocated
-            GLfloat * copied_data = (GLfloat *) malloc(sizeof(float) * 16);
-            memcpy(copied_data, &mvp[0][0], sizeof(float) * 16);
-            model->add_uniform_matrix("MVP", copied_data);
+            model->add_uniform_matrix("MVP", &mvp[0][0]);
             models.push_back(model);
         }
     }
+}
+
+void QGLRenderThread::load_turtle_demo() {
+    GLint wire_shader = load_shaders("shaders/default.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
+
+    Model * tree_model = Model::create_model(wire_shader);
+    Geometry * tree_geometry = TreeGenerator::generate_tree();
+    float * tree_mesh = tree_geometry->g_model_buffer();
+    tree_model->add_attribute(tree_mesh, tree_geometry->g_model_buffer_size(), 3, "vertex_position");
+
+    glm::mat4 view_transform = glm::lookAt(glm::vec3(1,6,8), glm::vec3(0,3,0), glm::vec3(0,1,0));
+    glm::mat4 projection_transform = glm::perspective(45.0f, ((float)w) / h, 0.1f, 1000.0f);
+    glm::mat4 model_transform = glm::rotate(glm::mat4(), -90.0f, glm::vec3(1.0, 0.0, 0.0));
+    glm::mat4 mvp = projection_transform * view_transform * model_transform;
+    tree_model->add_uniform_matrix("MVP", &mvp[0][0]);
+    models.push_back(tree_model);
+
+    free(tree_mesh);
+    delete tree_geometry;
 }
 
 void QGLRenderThread::GLResize(int width, int height) {

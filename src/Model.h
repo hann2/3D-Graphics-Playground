@@ -38,7 +38,6 @@ class Model {
         int model_size;
 };
 
-
 #endif
 
 

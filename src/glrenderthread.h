@@ -29,8 +29,10 @@ protected:
     void GLResize(int width, int height);
 
 private:
+    void load_wireframe_scene();
     void load_procedural_scene();
     void load_perlin_demo();
+    void load_turtle_demo();
     QTimer * timer;
     bool doRendering, doResize;
     int w, h, FrameCounter;
