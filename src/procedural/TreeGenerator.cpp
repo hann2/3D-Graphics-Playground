@@ -14,7 +14,7 @@ TreeGenerator::TreeGenerator(Turtle t, Skeleton s, branch_params_t branch_1, bra
 }
 
 
-IndexedFaceSet * TreeGenerator::generate_tree() {
+IndexedFaceSet * TreeGenerator::generate_normal_tree() {
     branch_params_t b1 = {
         .alpha = 30.0,
         .phi = 137.0,
@@ -28,6 +28,26 @@ IndexedFaceSet * TreeGenerator::generate_tree() {
         .w_scale = 0.7071
     };
     TreeGenerator t(Turtle(), Skeleton(), b1, b2, 0.1);
+    t.generate_tree_h(1.0, 0.2);
+    return t.skeleton.generate_mesh();
+}
+
+IndexedFaceSet * TreeGenerator::generate_willow_tree() {
+    float q = 0.6;
+    float e = 0.5;
+    branch_params_t b1 = {
+        .alpha = 30.0,
+        .phi = 70.0,
+        .s_scale = 0.9,
+        .w_scale = (float) pow(q, e)
+    };
+    branch_params_t b2 = {
+        .alpha = -50.0,
+        .phi = 100.0,
+        .s_scale = 0.8,
+        .w_scale = (float) pow(1 - q, e)
+    };
+    TreeGenerator t(Turtle(), Skeleton(), b1, b2, 0.20);
     t.generate_tree_h(1.0, 0.2);
     return t.skeleton.generate_mesh();
 }

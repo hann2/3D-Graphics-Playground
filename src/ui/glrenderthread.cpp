@@ -191,7 +191,7 @@ void QGLRenderThread::load_procedural_scene() {
     GLint wire_shader = load_shaders("shaders/default.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
 
     Model * tree_model = Model::create_model(wire_shader);
-    IndexedFaceSet * tree_geometry = TreeGenerator::generate_tree();
+    IndexedFaceSet * tree_geometry = TreeGenerator::generate_normal_tree();
     float * tree_mesh = tree_geometry->g_model_buffer();
     tree_model->add_attribute(tree_mesh, tree_geometry->g_model_buffer_size(), 3, "vertex_position");
 
@@ -262,20 +262,34 @@ void QGLRenderThread::load_perlin_demo() {
 void QGLRenderThread::load_turtle_demo() {
     GLint wire_shader = load_shaders("shaders/default.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
 
-    Model * tree_model = Model::create_model(wire_shader);
-    IndexedFaceSet * tree_geometry = TreeGenerator::generate_tree();
-    float * tree_mesh = tree_geometry->g_model_buffer();
-    tree_model->add_attribute(tree_mesh, tree_geometry->g_model_buffer_size(), 3, "vertex_position");
+    Model * tree1_model = Model::create_model(wire_shader);
+    IndexedFaceSet * tree1_geometry = TreeGenerator::generate_normal_tree();
+    float * tree1_mesh = tree1_geometry->g_model_buffer();
+    tree1_model->add_attribute(tree1_mesh, tree1_geometry->g_model_buffer_size(), 3, "vertex_position");
 
-    glm::mat4 view_transform = glm::lookAt(glm::vec3(2,3,12), glm::vec3(0,3,0), glm::vec3(0,1,0));
+    glm::mat4 view_transform = glm::lookAt(glm::vec3(0,4,18), glm::vec3(0,3,0), glm::vec3(0,1,0));
     glm::mat4 projection_transform = glm::perspective(45.0f, ((float)w) / h, 0.1f, 1000.0f);
-    glm::mat4 model_transform = glm::rotate(glm::mat4(), -90.0f, glm::vec3(1.0, 0.0, 0.0));
+    glm::mat4 model_transform = glm::translate(glm::mat4(), glm::vec3(-4.0, 0.0, 0.0)) *
+        glm::rotate(glm::mat4(), -90.0f, glm::vec3(1.0, 0.0, 0.0));
     glm::mat4 mvp = projection_transform * view_transform * model_transform;
-    tree_model->add_uniform_matrix("MVP", &mvp[0][0]);
-    models.push_back(tree_model);
+    tree1_model->add_uniform_matrix("MVP", &mvp[0][0]);
+    models.push_back(tree1_model);
 
-    free(tree_mesh);
-    delete tree_geometry;
+    free(tree1_mesh);
+    delete tree1_geometry;
+
+    Model * tree2_model = Model::create_model(wire_shader);
+    IndexedFaceSet * tree2_geometry = TreeGenerator::generate_willow_tree();
+    float * tree2_mesh = tree2_geometry->g_model_buffer();
+    tree2_model->add_attribute(tree2_mesh, tree2_geometry->g_model_buffer_size(), 3, "vertex_position");
+
+    model_transform = glm::translate(glm::mat4(), glm::vec3(8.0, 0.0, 0.0)) * model_transform;
+    mvp = projection_transform * view_transform * model_transform;
+    tree2_model->add_uniform_matrix("MVP", &mvp[0][0]);
+    models.push_back(tree2_model);
+
+    free(tree2_mesh);
+    delete tree2_geometry;
 }
 
 void QGLRenderThread::GLResize(int width, int height) {

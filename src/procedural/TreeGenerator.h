@@ -17,7 +17,8 @@ typedef struct _branch_params_t {
 
 class TreeGenerator {
     public:
-        static IndexedFaceSet * generate_tree();
+        static IndexedFaceSet * generate_normal_tree();
+        static IndexedFaceSet * generate_willow_tree();
         TreeGenerator(Turtle t, Skeleton s, branch_params_t branch_1, branch_params_t branch_2, float s_m);
     private:
         void generate_tree_h(float s, float w);
