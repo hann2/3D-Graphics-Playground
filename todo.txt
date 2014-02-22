@@ -1,0 +1,17 @@
+
+fix dir structure
+create scene class for set of models
+separate mvp
+create 100 trees
+time it
+sort by shader program and only switch when needed
+learn about instancing
+instance trees
+time it
+compare
+
+
+
+
+
+

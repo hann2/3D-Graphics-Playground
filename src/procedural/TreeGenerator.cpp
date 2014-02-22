@@ -14,22 +14,20 @@ TreeGenerator::TreeGenerator(Turtle t, Skeleton s, branch_params_t branch_1, bra
 }
 
 
-Geometry * TreeGenerator::generate_tree() {
-    float q = 0.6;
-    float e = 0.5;
+IndexedFaceSet * TreeGenerator::generate_tree() {
     branch_params_t b1 = {
         .alpha = 30.0,
-        .phi = 70.0,
-        .s_scale = 0.9,
-        .w_scale = (float) pow(q, e)
+        .phi = 137.0,
+        .s_scale = 0.8,
+        .w_scale = 0.7071
     };
     branch_params_t b2 = {
-        .alpha = -50.0,
-        .phi = 100.0,
+        .alpha = -30.0,
+        .phi = 137.0,
         .s_scale = 0.8,
-        .w_scale = (float) pow(1 - q, e)
+        .w_scale = 0.7071
     };
-    TreeGenerator t(Turtle(), Skeleton(), b1, b2, 0.20);
+    TreeGenerator t(Turtle(), Skeleton(), b1, b2, 0.1);
     t.generate_tree_h(1.0, 0.2);
     return t.skeleton.generate_mesh();
 }

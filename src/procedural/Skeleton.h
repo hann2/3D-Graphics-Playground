@@ -2,7 +2,7 @@
 #ifndef _SKELETON_H
 #define _SKELETON_H
 
-#include "Geometry.h"
+#include "IndexedFaceSet.h"
 #include <glm/glm.hpp>
 #include <vector>
 
@@ -15,10 +15,10 @@ class Skeleton {
                 std::vector<int> children;
         };
         std::vector<Bone> bones;
-        void generate_mesh_h(Geometry * mesh, Bone bone, Geometry * cylinder);
+        void generate_mesh_h(IndexedFaceSet * mesh, Bone bone, IndexedFaceSet * cylinder);
     public:
         Skeleton();
-        Geometry * generate_mesh();
+        IndexedFaceSet * generate_mesh();
         int add_bone(int parent, glm::mat4 state);
 };
 

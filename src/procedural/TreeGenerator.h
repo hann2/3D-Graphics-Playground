@@ -3,7 +3,7 @@
 #ifndef _TREE_GENERATOR_H
 #define _TREE_GENERATOR_H
 
-#include "Geometry.h"
+#include "IndexedFaceSet.h"
 #include "Turtle.h"
 #include "Skeleton.h"
 #include <vector>
@@ -17,7 +17,7 @@ typedef struct _branch_params_t {
 
 class TreeGenerator {
     public:
-        static Geometry * generate_tree();
+        static IndexedFaceSet * generate_tree();
         TreeGenerator(Turtle t, Skeleton s, branch_params_t branch_1, branch_params_t branch_2, float s_m);
     private:
         void generate_tree_h(float s, float w);

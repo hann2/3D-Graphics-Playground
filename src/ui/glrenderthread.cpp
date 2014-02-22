@@ -63,7 +63,7 @@ void QGLRenderThread::init_gl_context() {
 void QGLRenderThread::run() {
 
     init_gl_context();
-    load_procedural_scene();
+    load_turtle_demo();
 
     while (doRendering) {
         long int start = QDateTime::currentMSecsSinceEpoch();
@@ -102,7 +102,7 @@ void QGLRenderThread::load_wireframe_scene() {
     GLint wire_shader = load_shaders("shaders/default.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
 
     Model * suzanne_model = Model::create_model(wire_shader);
-    Geometry * suzanne_geometry = load_collada("assets/models/suzanne.dae");
+    IndexedFaceSet * suzanne_geometry = load_collada("assets/models/suzanne.dae");
     float * suzanne_mesh = suzanne_geometry->g_model_buffer();
     suzanne_model->add_attribute(suzanne_mesh, suzanne_geometry->g_model_buffer_size(), 3, "vertex_position");
 
@@ -125,7 +125,7 @@ void QGLRenderThread::load_procedural_scene() {
     float * terrain = terrain_height(mesh_size, mesh_size);
     float tex_step = 1.0 / (mesh_size - 1);
 
-    Geometry geometry(mesh_size * mesh_size, (mesh_size - 1) * (mesh_size - 1) * 2);
+    IndexedFaceSet geometry(mesh_size * mesh_size, (mesh_size - 1) * (mesh_size - 1) * 2);
 
     for (int i = 0; i < mesh_size; i++) {
         for (int j = 0; j < mesh_size; j++) {
@@ -139,7 +139,7 @@ void QGLRenderThread::load_procedural_scene() {
                 j * tex_step
             };
             geometry.add_vertex(&vertex[0]);
-            geometry.add_tex_coord(geometry.g_num_vertices() - 1, &texture_coord[0]);
+            geometry.add_tex_coord(&texture_coord[0]);
         }
     }
 
@@ -161,10 +161,10 @@ void QGLRenderThread::load_procedural_scene() {
     }
 
     float * terrain_mesh = geometry.g_model_buffer();
-    float * terrain_normals = geometry.g_normals_buffer();
+    float * terrain_normals = geometry.g_vertex_normals_buffer();
     float * terrain_tex_coords = geometry.g_tex_buffer();
     int terrain_mesh_size = geometry.g_model_buffer_size();
-    int terrain_normals_size = geometry.g_normals_buffer_size();
+    int terrain_normals_size = geometry.g_vertex_normals_buffer_size();
     int terrain_tex_buffer_size = geometry.g_tex_buffer_size();
 
     terrain_model->add_attribute(terrain_mesh, terrain_mesh_size, 3, "vertex_position");
@@ -191,13 +191,13 @@ void QGLRenderThread::load_procedural_scene() {
     GLint wire_shader = load_shaders("shaders/default.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
 
     Model * tree_model = Model::create_model(wire_shader);
-    Geometry * tree_geometry = TreeGenerator::generate_tree();
+    IndexedFaceSet * tree_geometry = TreeGenerator::generate_tree();
     float * tree_mesh = tree_geometry->g_model_buffer();
     tree_model->add_attribute(tree_mesh, tree_geometry->g_model_buffer_size(), 3, "vertex_position");
 
     model_transform =
         glm::translate(glm::mat4(), glm::vec3(32.0, terrain[32 * mesh_size + 32] * 20, 32.0)) *
-        glm::scale(glm::mat4(), glm::vec3(2, 2, 2)) *
+        // glm::scale(glm::mat4(), glm::vec3(2, 2, 2)) *
         glm::rotate(glm::mat4(), -90.0f, glm::vec3(1.0, 0.0, 0.0));
     mvp = projection_transform * view_transform * model_transform;
     tree_model->add_uniform_matrix("MVP", &mvp[0][0]);
@@ -263,7 +263,7 @@ void QGLRenderThread::load_turtle_demo() {
     GLint wire_shader = load_shaders("shaders/default.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
 
     Model * tree_model = Model::create_model(wire_shader);
-    Geometry * tree_geometry = TreeGenerator::generate_tree();
+    IndexedFaceSet * tree_geometry = TreeGenerator::generate_tree();
     float * tree_mesh = tree_geometry->g_model_buffer();
     tree_model->add_attribute(tree_mesh, tree_geometry->g_model_buffer_size(), 3, "vertex_position");
 

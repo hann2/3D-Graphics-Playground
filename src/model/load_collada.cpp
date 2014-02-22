@@ -64,7 +64,7 @@ static int * get_ints(char * & str, int num_ints) {
     return d;
 }
 
-Geometry * load_collada(const char * file_name) {
+IndexedFaceSet * load_collada(const char * file_name) {
     char * text = get_file_contents(file_name);
 
     rapidxml::xml_document<> * doc = new rapidxml::xml_document<>();
@@ -97,7 +97,7 @@ Geometry * load_collada(const char * file_name) {
 
     int num_vertices = atoi(vertices->first_attribute("count")->value()) / 3;
 
-    Geometry * model = new Geometry(num_vertices, num_faces);
+    IndexedFaceSet * model = new IndexedFaceSet(num_vertices, num_faces);
 
     char * vert_ptr = vertices->value();
 

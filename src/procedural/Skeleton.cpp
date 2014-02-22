@@ -12,17 +12,17 @@ Skeleton::Skeleton() {
     bones = std::vector<Skeleton::Bone>();
 }
 
-Geometry * Skeleton::generate_mesh() {
-    static Geometry * cylinder;
+IndexedFaceSet * Skeleton::generate_mesh() {
+    static IndexedFaceSet * cylinder;
     if (cylinder == NULL) {
         cylinder = load_collada("assets/models/cylinder.dae");
     }
-    Geometry * mesh = new Geometry(cylinder->g_num_vertices() * bones.size(), cylinder->g_num_faces() * bones.size());
+    IndexedFaceSet * mesh = new IndexedFaceSet(cylinder->g_num_vertices() * bones.size(), cylinder->g_num_faces() * bones.size());
     generate_mesh_h(mesh, bones.at(0), cylinder);
     return mesh;
 }
 
-void Skeleton::generate_mesh_h(Geometry * mesh, Bone bone, Geometry * cylinder) {
+void Skeleton::generate_mesh_h(IndexedFaceSet * mesh, Bone bone, IndexedFaceSet * cylinder) {
     int cur_ind = mesh->g_num_vertices();
     for (int vert_ind = 0; vert_ind < cylinder->g_num_vertices(); vert_ind++) {
         float * vert = cylinder->g_vertex(vert_ind);
