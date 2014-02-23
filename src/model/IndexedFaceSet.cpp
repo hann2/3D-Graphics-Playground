@@ -65,6 +65,7 @@ void IndexedFaceSet::add_face(int degree, int * corners) {
 
 void IndexedFaceSet::add_tex_coord(float * coord) {
     memcpy(tex_coords + cur_tex_coord * 2, coord, 2 * sizeof(float));
+    cur_tex_coord++;
 }
 
 void IndexedFaceSet::add_vertex_normal(float * normal) {
@@ -72,6 +73,7 @@ void IndexedFaceSet::add_vertex_normal(float * normal) {
         vertex_normals = (float *) malloc(num_vertices * VERTEX_SIZE);
     }
     memcpy(vertex_normals + (cur_vertex_normal * DIMENSION), normal, VERTEX_SIZE);
+    cur_vertex_normal++;
 }
 
 float * IndexedFaceSet::g_vertex(int ind) {

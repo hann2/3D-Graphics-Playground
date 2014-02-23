@@ -85,10 +85,9 @@ void Model::add_uniform_matrix(std::string matrix_name, GLfloat * data) {
         return;
     }
 
-    GLfloat * copied_data = (GLfloat *) malloc(sizeof(float) * 16);
-    memcpy(copied_data, data, sizeof(float) * 16);
-
     if (matrices.count(matrix_name) == 0) {
+        GLfloat * copied_data = (GLfloat *) malloc(sizeof(float) * 16);
+        memcpy(copied_data, data, sizeof(float) * 16);
         model_matrix_t matrix = {
             .matrix_data = copied_data,
             .matrix_id = matrix_location
@@ -96,8 +95,7 @@ void Model::add_uniform_matrix(std::string matrix_name, GLfloat * data) {
         matrices.emplace(matrix_name, matrix);
     } else {
         model_matrix_t m = matrices.at(matrix_name);
-        free(m.matrix_data);
-        m.matrix_data = copied_data;
+        memcpy(m.matrix_data, data, sizeof(float) * 16);
     }
 }
 

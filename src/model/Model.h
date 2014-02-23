@@ -1,6 +1,7 @@
 #ifndef _MODEL_H
 #define _MODEL_H
 
+#include <GL/gl.h>
 #include <vector>
 #include <string>
 #include <unordered_map>

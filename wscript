@@ -23,17 +23,26 @@ def configure(ctx):
 def build(ctx):
     src_files = [
         'src/main.cpp',
+
         'src/ui/glframe.cpp',
         'src/ui/glrenderthread.cpp',
         'src/ui/mainwindow.cpp',
         'src/ui/mainwindow.ui',
+
         'src/model/IndexedFaceSet.cpp',
         'src/model/load_collada.cpp',
         'src/model/Model.cpp',
+
         'src/procedural/ProceduralGenerator.cpp',
         'src/procedural/Skeleton.cpp',
         'src/procedural/Turtle.cpp',
-        'src/procedural/TreeGenerator.cpp'
+        'src/procedural/TreeGenerator.cpp',
+
+        'src/scene/Scene.cpp',
+        'src/scene/WireframeScene.cpp',
+        'src/scene/ProceduralScene.cpp',
+        'src/scene/TreeScene.cpp',
+        'src/scene/PerlinScene.cpp'
     ]
     ctx.program(
         source = ' '.join(src_files),
