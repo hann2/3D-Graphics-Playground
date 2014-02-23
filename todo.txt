@@ -1,20 +1,68 @@
 
 [X] fix dir structure
 [X] create scene class for set of models
-[ ] separate mvp
-[ ] create 100 trees
-[ ] time it
-[ ] switch to indexed face set
-[ ] sort by shader program and only switch when needed
+[X] separate mvp
+[X] create 100 trees
+[X] time it
+Frame took 2086 miliseconds.
+Frame took 1964 miliseconds.
+Frame took 1954 miliseconds.
+Frame took 1951 miliseconds.
+Frame took 1950 miliseconds.
+Frame took 1951 miliseconds.
+Frame took 1945 miliseconds.
+[X] switch to indexed face set
+[X] time it
+Frame took 753 miliseconds.
+Frame took 657 miliseconds.
+Frame took 655 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+[X] sort by shader program and only switch when needed
+[X] time it
+Frame took 753 miliseconds.
+Frame took 661 miliseconds.
+Frame took 655 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 652 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 654 miliseconds.
+Frame took 652 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
+Frame took 653 miliseconds.
 [ ] learn about instancing
 [ ] instance trees
+[ ] time it
+[ ] compare
 [ ] support triangle strips
 [ ] implement cylinder triangle strips
 [ ] time it
 [ ] compare
 
 
-
-
-
+[ ] track down memory leaks
 

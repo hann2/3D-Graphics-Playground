@@ -9,21 +9,20 @@ void PerlinScene::setup_scene() {
     GLint topo_shader = load_shaders("shaders/textured.vsh", "", "shaders/topo.fsh");
     GLint grass_shader = load_shaders("shaders/textured.vsh", "", "shaders/textured.fsh");
     GLint no_shader = load_shaders("shaders/textured.vsh", "", "shaders/topo.fsh");
-    float g_vertex_buffer_data[] = { 
+    float vertices[] = { 
         -1.0f, -1.0f, 0.0f,
         1.0f,  -1.0f, 0.0f,
         1.0f,  1.0f,  0.0f,
-        1.0f,  1.0f,  0.0f,
-        -1.0f, 1.0f,  0.0f,
-        -1.0f, -1.0f, 0.0f
+        -1.0f, 1.0f,  0.0f
     };
-    float g_uv_buffer_data[] = {
+    float texture_coords[] = {
         0.0f, 0.0f,
         1.0f, 0.0f,
         1.0f, 1.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f
+        0.0f, 1.0f
+    };
+    int indices[] = {
+        0, 1, 2, 2, 3, 0
     };
 
     glm::mat4 view_transform = glm::lookAt(glm::vec3(4,4,10), glm::vec3(0,0,0), glm::vec3(0,1,0));
@@ -43,8 +42,9 @@ void PerlinScene::setup_scene() {
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             Model * model = Model::create_model(shaders[i][j]);
-            model->add_attribute(&g_vertex_buffer_data[0], sizeof(g_vertex_buffer_data), 3, "vertex_position");
-            model->add_attribute(&g_uv_buffer_data[0], sizeof(g_uv_buffer_data), 2, "vertex_UV");
+            model->add_attribute(&vertices[0], sizeof(vertices), 3, "vertex_position");
+            model->add_attribute(&texture_coords[0], sizeof(texture_coords), 2, "vertex_UV");
+            model->add_indices(&indices[0], sizeof(indices));
             model->add_texture(texture_data[i][j], 256, 256, GL_FLOAT, 1, "texture_sampler");
 
             glm::mat4 model_transform = glm::translate(glm::mat4(), glm::vec3((i - 1) * 2.4f, (j - 1) * 2.4f, 0.0f));

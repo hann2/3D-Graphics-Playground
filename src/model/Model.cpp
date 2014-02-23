@@ -16,7 +16,8 @@ Model::Model(std::vector<model_attribute_t> attributes,
     this->textures = textures;
     this->matrices = matrices;
     this->shader_program_id = program_id;
-    this->model_size = -1;
+    this->num_indices = -1;
+    this->indices_buffer_id = -1;
 }
 
 // always set vertices first
@@ -25,10 +26,6 @@ void Model::add_attribute(float * buffer, int size, int channels, std::string at
     if (attribute_location == -1) {
         std::cout << "could not find attribute " << attribute_name << ".\n";
         return;
-    }
-
-    if (model_size == -1) {
-        model_size = size;
     }
 
     GLuint buffer_id;
@@ -43,6 +40,13 @@ void Model::add_attribute(float * buffer, int size, int channels, std::string at
     };
 
     attributes.push_back(attribute);
+}
+
+void Model::add_indices(int * buffer, int size) {
+    glGenBuffers(1 , &indices_buffer_id);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices_buffer_id);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, buffer, GL_STATIC_DRAW);
+    num_indices = size;
 }
 
 void Model::add_texture(void * data, int width, int height, GLenum type, int channels, std::string texture_name) {
@@ -100,8 +104,6 @@ void Model::add_uniform_matrix(std::string matrix_name, GLfloat * data) {
 }
 
 void Model::render_model() {
-    glUseProgram(shader_program_id);
-
     for (auto kvPair : matrices) {
         model_matrix_t matrix = kvPair.second;
         glUniformMatrix4fv(matrix.matrix_id, 1, GL_FALSE, matrix.matrix_data);
@@ -119,12 +121,11 @@ void Model::render_model() {
         glVertexAttribPointer(attribute.attribute_id, attribute.num_channels, GL_FLOAT, GL_FALSE, 0, (void *) 0);
     }
 
-    glDrawArrays(GL_TRIANGLES, 0, model_size);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices_buffer_id);
+    glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_INT, NULL);
 
     for (model_attribute_t attribute : attributes) {
         glDisableVertexAttribArray(attribute.attribute_id);
     }
-
-    glUseProgram(0);
 }
 

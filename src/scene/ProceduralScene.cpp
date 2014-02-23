@@ -30,7 +30,7 @@ void ProceduralScene::setup_scene() {
                 j * tex_step
             };
             geometry.add_vertex(&vertex[0]);
-            geometry.add_tex_coord(&texture_coord[0]);
+            geometry.add_texture_coordinate(&texture_coord[0]);
         }
     }
 
@@ -51,16 +51,20 @@ void ProceduralScene::setup_scene() {
         }
     }
 
-    float * terrain_mesh = geometry.g_model_buffer();
-    float * terrain_normals = geometry.g_vertex_normals_buffer();
-    float * terrain_tex_coords = geometry.g_tex_buffer();
-    int terrain_mesh_size = geometry.g_model_buffer_size();
-    int terrain_normals_size = geometry.g_vertex_normals_buffer_size();
-    int terrain_tex_buffer_size = geometry.g_tex_buffer_size();
+    float * terrain_vertices = geometry.g_vertex_buffer();
+    int * terrain_indices = geometry.g_index_buffer();
+    float * terrain_normals = geometry.g_vertex_normal_buffer();
+    float * terrain_tex_coords = geometry.g_texture_coordinate_buffer();
 
-    terrain_model->add_attribute(terrain_mesh, terrain_mesh_size, 3, "vertex_position");
+    int terrain_vertices_size = geometry.g_vertex_buffer_size();
+    int terrain_indices_size = geometry.g_index_buffer_size();
+    int terrain_normals_size = geometry.g_vertex_normal_buffer_size();
+    int terrain_tex_coords_size = geometry.g_texture_coordinate_buffer_size();
+
+    terrain_model->add_attribute(terrain_vertices, terrain_vertices_size, 3, "vertex_position");
     terrain_model->add_attribute(terrain_normals, terrain_normals_size, 3, "vertex_normal");
-    terrain_model->add_attribute(terrain_tex_coords, terrain_tex_buffer_size, 2, "vertex_UV");
+    terrain_model->add_attribute(terrain_tex_coords, terrain_tex_coords_size, 2, "vertex_UV");
+    terrain_model->add_indices(terrain_indices, terrain_indices_size);
 
     float * grass_text = grass_texture(256, 256);
     terrain_model->add_texture(grass_text, 256, 256, GL_FLOAT, 1, "texture_sampler");
@@ -71,20 +75,24 @@ void ProceduralScene::setup_scene() {
     terrain_model->add_uniform_matrix("model_transform", &model_transform[0][0]);
     models.emplace(grass_shader, terrain_model);
 
-    free(terrain_mesh);
+    free(terrain_vertices);
+    free(terrain_indices);
     free(terrain_normals);
     free(terrain_tex_coords);
     free(grass_text);
-
 
     GLint wire_shader = load_shaders("shaders/default.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
 
     Model * tree_model = Model::create_model(wire_shader);
     IndexedFaceSet * tree_geometry = TreeGenerator::generate_normal_tree();
-    float * tree_mesh = tree_geometry->g_model_buffer();
-    tree_model->add_attribute(tree_mesh, tree_geometry->g_model_buffer_size(), 3, "vertex_position");
 
-    
+    float * tree_vertices = tree_geometry->g_vertex_buffer();
+    int * tree_indices = tree_geometry->g_index_buffer();
+    int tree_vertices_size = tree_geometry->g_vertex_buffer_size();
+    int tree_indices_size = tree_geometry->g_index_buffer_size();
+    tree_model->add_attribute(tree_vertices, tree_vertices_size, 3, "vertex_position");
+    tree_model->add_indices(tree_indices, tree_indices_size);
+
     model_transform =
         glm::translate(glm::mat4(), glm::vec3(32.0, terrain[32 * mesh_size + 32] * 20, 32.0)) *
         glm::rotate(glm::mat4(), -90.0f, glm::vec3(1.0, 0.0, 0.0));
@@ -92,7 +100,8 @@ void ProceduralScene::setup_scene() {
     tree_model->add_uniform_matrix("model_transform", &model_transform[0][0]);
     models.emplace(wire_shader, tree_model);
 
-    free(tree_mesh);
+    free(tree_vertices);
+    free(tree_indices);
     free(terrain);
     delete tree_geometry;
 }

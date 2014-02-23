@@ -13,6 +13,7 @@
 #include "TreeScene.h"
 #include "ProceduralScene.h"
 #include "PerlinScene.h"
+#include "EfficientScene.h"
 
 // fps in hz
 #define FRAME_RATE 60
@@ -59,8 +60,9 @@ void QGLRenderThread::run() {
     init_gl_context();
     // WireframeScene scene;
     // TreeScene scene;
-    ProceduralScene scene;
+    // ProceduralScene scene;
     // PerlinScene scene;
+    EfficientScene scene;
     scene.setup_scene();
 
     while (doRendering) {
@@ -85,7 +87,7 @@ void QGLRenderThread::run() {
         }
 
         int time_elapsed = QDateTime::currentMSecsSinceEpoch() - start;
-        // std::cout << "Frame took " << time_elapsed << " miliseconds.\n";
+        std::cout << "Frame took " << time_elapsed << " miliseconds.\n";
         if (time_elapsed < FRAME_LENGTH) {
             msleep(FRAME_LENGTH - time_elapsed);
         }

@@ -52,6 +52,7 @@ void IndexedFaceSet::add_face(int degree, int * corners) {
     for (int ind = 0; ind < degree; ind++) {
         if (corners[ind] < 0 || corners[ind] >= cur_vertex) {
             std::cout << "vertex " << corners[ind] << " does not exist, cannot add face\n";
+            std::cout << num_vertices << "\n";
             throw std::out_of_range("out of range");
         }
     }
@@ -63,7 +64,7 @@ void IndexedFaceSet::add_face(int degree, int * corners) {
     cur_face++;
 }
 
-void IndexedFaceSet::add_tex_coord(float * coord) {
+void IndexedFaceSet::add_texture_coordinate(float * coord) {
     memcpy(tex_coords + cur_tex_coord * 2, coord, 2 * sizeof(float));
     cur_tex_coord++;
 }
@@ -93,7 +94,7 @@ face_t * IndexedFaceSet::g_face(int ind) {
     return &faces[ind];
 }
 
-float * IndexedFaceSet::g_tex_coord(int ind) {
+float * IndexedFaceSet::g_texture_coordinate(int ind) {
     return tex_coords + (ind * 2);
 }
 
@@ -105,25 +106,65 @@ int IndexedFaceSet::g_num_faces() {
     return cur_face;
 }
 
-float * IndexedFaceSet::g_model_buffer() {
+float * IndexedFaceSet::g_vertex_buffer() {
     if (cur_face < num_faces || cur_vertex < num_vertices) {
         std::cout << "Fill up geometry before getting model buffer.\n";
         throw std::out_of_range("out of range");
     }
-    // TODO: make this work with non triangles
-    float * buffer = (float *) malloc(VERTEX_SIZE * 3 * g_num_faces());
-    for (int face_ind = 0; face_ind < g_num_faces(); face_ind++) {
-        face_t * face = g_face(face_ind);
-        for (int corner = 0; corner < face->degree; corner++) {
-            float * vert = g_vertex(face->corners[corner]);
-            // these should be equivalent! 
-            // memcpy(buffer + face_size * face_ind + VERTEX_SIZE * corner, vert, VERTEX_SIZE);
-            buffer[face_ind * 9 + corner * 3] = vert[0];
-            buffer[face_ind * 9 + corner * 3 + 1] = vert[1];
-            buffer[face_ind * 9 + corner * 3 + 2] = vert[2];
-        }
-    }
+    float * buffer = (float *) malloc(g_vertex_buffer_size());
+    memcpy(buffer, vertices, g_vertex_buffer_size());
     return buffer;
+}
+
+float * IndexedFaceSet::g_vertex_normal_buffer() {
+    if (cur_face < num_faces || cur_vertex < num_vertices) {
+        std::cout << "Fill up geometry before getting normal buffer.\n";
+        throw std::out_of_range("out of range");
+    }
+    if (vertex_normals == NULL) {
+        calculate_vertex_normals();
+    }
+    float * buffer = (float *) malloc(g_vertex_normal_buffer_size());
+    memcpy(buffer, vertex_normals, g_vertex_normal_buffer_size());
+    return buffer;
+}
+
+float * IndexedFaceSet::g_texture_coordinate_buffer() {
+    if (cur_face < num_faces || cur_vertex < num_vertices || cur_tex_coord < num_vertices) {
+        std::cout << "Fill up geometry before getting texture buffer.\n";
+        throw std::out_of_range("out of range");
+    }
+    float * buffer = (float *) malloc(g_texture_coordinate_buffer_size());
+    memcpy(buffer, tex_coords, g_texture_coordinate_buffer_size());
+    return buffer;
+}
+
+int * IndexedFaceSet::g_index_buffer() {
+    if (cur_face < num_faces || cur_vertex < num_vertices) {
+        std::cout << "Fill up geometry before getting indices buffer.\n";
+        throw std::out_of_range("out of range");
+    }
+    int * indices = (int *) malloc(g_index_buffer_size());
+    for (int i = 0; i < num_faces; i++) {
+        memcpy(indices + i * 3, g_face(i)->corners, 3 * sizeof(int));
+    }
+    return indices;
+}
+
+int IndexedFaceSet::g_vertex_buffer_size() {
+    return num_vertices * VERTEX_SIZE;
+}
+
+int IndexedFaceSet::g_vertex_normal_buffer_size() {
+    return num_vertices * VERTEX_SIZE;
+}
+
+int IndexedFaceSet::g_texture_coordinate_buffer_size() {
+    return num_vertices * 2 * sizeof(float);
+}
+
+int IndexedFaceSet::g_index_buffer_size() {
+    return num_faces * 3 * sizeof(int);
 }
 
 void IndexedFaceSet::normalize_vec(float * v) {
@@ -156,7 +197,6 @@ float * IndexedFaceSet::g_face_normal(int face_ind) {
     normal[1] = uz * vx - ux * vz;
     normal[2] = ux * vy - vx * uy;
 
-    // std::cout << "normalizing face normal " << face_ind << "\n";
     normalize_vec(normal);
 
     return normal;
@@ -179,67 +219,11 @@ void IndexedFaceSet::calculate_vertex_normals() {
     }
 
     for (int ind = 0; ind < num_vertices; ind++) {
-        // std::cout << "normalizing vertex normal " << ind << "\n";
         normalize_vec(vertex_normals + ind * 3);
     }
     cur_vertex_normal = num_vertices;
 }
 
-float * IndexedFaceSet::g_vertex_normals_buffer() {
-    if (cur_face < num_faces || cur_vertex < num_vertices) {
-        std::cout << "Fill up geometry before getting normal buffer.\n";
-        throw std::out_of_range("out of range");
-    }
-    if (vertex_normals == NULL) {
-        calculate_vertex_normals();
-    }
-    
-    float * normals_buffer = (float *) malloc(g_num_faces() * 3 * VERTEX_SIZE);
-
-    for (int face_ind = 0; face_ind < g_num_faces(); face_ind++) {
-        face_t * face = g_face(face_ind);
-        for (int corner = 0; corner < face->degree; corner++) {
-            int vert_ind = face->corners[corner];
-            normals_buffer[face_ind * 3 * 3 + corner * 3] = vertex_normals[vert_ind * 3];
-            normals_buffer[face_ind * 3 * 3 + corner * 3 + 1] = vertex_normals[vert_ind * 3 + 1];
-            normals_buffer[face_ind * 3 * 3 + corner * 3 + 2] = vertex_normals[vert_ind * 3 + 2];
-        }
-    }
-    free(vertex_normals);
-    return normals_buffer;
-}
-
-float * IndexedFaceSet::g_tex_buffer() {
-    if (cur_face < num_faces || cur_vertex < num_vertices) {
-        std::cout << "Fill up geometry before getting texture buffer.\n";
-        throw std::out_of_range("out of range");
-    }
-    // TODO: make this work with non triangles
-    float * buffer = (float *) malloc(sizeof(float) * 2 * 3 * g_num_faces());
-    for (int face_ind = 0; face_ind < g_num_faces(); face_ind++) {
-        face_t * face = g_face(face_ind);
-        for (int corner = 0; corner < face->degree; corner++) {
-            float * tex_coord = g_tex_coord(face->corners[corner]);
-            // these should be equivalent! 
-            // memcpy(buffer + face_size * face_ind + VERTEX_SIZE * corner, vert, VERTEX_SIZE);
-            buffer[face_ind * 6 + corner * 2] = tex_coord[0];
-            buffer[face_ind * 6 + corner * 2 + 1] = tex_coord[1];
-        }
-    }
-    return buffer;
-}
-
-int IndexedFaceSet::g_model_buffer_size() {
-    return g_num_faces() * 3 * VERTEX_SIZE;
-}
-
-int IndexedFaceSet::g_vertex_normals_buffer_size() {
-    return g_num_faces() * 3 * VERTEX_SIZE;
-}
-
-int IndexedFaceSet::g_tex_buffer_size() {
-    return g_num_faces() * 3 * 2 * sizeof(float);
-}
 
 float * IndexedFaceSet::g_bounding_sphere() {
     if (cur_face < num_faces || cur_vertex < num_vertices) {

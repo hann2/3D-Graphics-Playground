@@ -42,7 +42,8 @@ def build(ctx):
         'src/scene/WireframeScene.cpp',
         'src/scene/ProceduralScene.cpp',
         'src/scene/TreeScene.cpp',
-        'src/scene/PerlinScene.cpp'
+        'src/scene/PerlinScene.cpp',
+        'src/scene/EfficientScene.cpp'
     ]
     ctx.program(
         source = ' '.join(src_files),

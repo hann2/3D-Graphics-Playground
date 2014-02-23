@@ -11,10 +11,19 @@ Scene::Scene() {
 
 void Scene::render(int w, int h) {
     glm::mat4 perspective_transform = glm::perspective(45.0f, ((float)w) / h, 0.1f, 1000.0f);
-    for (auto & kv_pair : models) {
-        Model * model = kv_pair.second;
-        model->add_uniform_matrix("perspective_transform", &perspective_transform[0][0]);
-        model->render_model();
+
+    GLint shader_program_id = -1;
+    for (unsigned int i = 0; i < models.bucket_count(); i++) {
+        for (auto it = models.begin(i); it != models.end(i); it++) {
+            GLint temp = it->first;
+            if (temp != shader_program_id) {
+                shader_program_id = temp;
+                glUseProgram(shader_program_id);
+            }
+            Model * model = it->second;
+            model->add_uniform_matrix("perspective_transform", &perspective_transform[0][0]);
+            model->render_model();
+        }
     }
 }
 

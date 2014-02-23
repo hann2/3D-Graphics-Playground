@@ -1,3 +1,4 @@
+
 #ifndef _MODEL_H
 #define _MODEL_H
 
@@ -28,6 +29,7 @@ class Model {
         static Model * create_model(GLuint program_id);
         Model(std::vector<model_attribute_t> attributes, std::vector<model_texture_t> textures, std::unordered_map<std::string, model_matrix_t> matrices, GLuint program_id);
         void add_attribute(float * buffer, int size, int channels, std::string attribute_name);
+        void add_indices(int * buffer, int size);
         void add_texture(void * texture, int width, int height, GLenum type, int channels, std::string texture_name);
         void add_uniform_matrix(std::string matrix_name, GLfloat * matrix);
         void render_model();
@@ -36,7 +38,8 @@ class Model {
         std::vector<model_texture_t> textures;
         std::unordered_map<std::string, model_matrix_t> matrices;
         GLuint shader_program_id;
-        int model_size;
+        GLuint indices_buffer_id;
+        int num_indices;
 };
 
 #endif
