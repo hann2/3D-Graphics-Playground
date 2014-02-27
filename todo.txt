@@ -54,15 +54,102 @@ Frame took 653 miliseconds.
 Frame took 653 miliseconds.
 Frame took 653 miliseconds.
 Frame took 653 miliseconds.
-[ ] learn about instancing
-[ ] instance trees
-[ ] time it
-[ ] compare
-[ ] support triangle strips
-[ ] implement cylinder triangle strips
-[ ] time it
-[ ] compare
-
+[X] learn about instancing
+[X] instance trees
+[X] time it
+Frame took 564 miliseconds.
+Frame took 549 miliseconds.
+Frame took 539 miliseconds.
+Frame took 538 miliseconds.
+Frame took 538 miliseconds.
+Frame took 539 miliseconds.
+Frame took 538 miliseconds.
+Frame took 538 miliseconds.
+Frame took 538 miliseconds.
+Frame took 538 miliseconds.
+Frame took 538 miliseconds.
+Frame took 538 miliseconds.
+[X] compare
+eh
+[X] halve cylinder
+Frame took 292 miliseconds.
+Frame took 283 miliseconds.
+Frame took 272 miliseconds.
+Frame took 272 miliseconds.
+Frame took 272 miliseconds.
+Frame took 272 miliseconds.
+Frame took 272 miliseconds.
+Frame took 272 miliseconds.
+Frame took 272 miliseconds.
+Frame took 272 miliseconds.
+Frame took 272 miliseconds.
+Frame took 272 miliseconds.
+[X] support triangle strips
+[X] implement cylinder triangle strips
+[X] time it
+Frame took 310 miliseconds.
+Frame took 300 miliseconds.
+Frame took 288 miliseconds.
+Frame took 289 miliseconds.
+Frame took 289 miliseconds.
+Frame took 288 miliseconds.
+Frame took 289 miliseconds.
+Frame took 288 miliseconds.
+Frame took 289 miliseconds.
+Frame took 289 miliseconds.
+Frame took 288 miliseconds.
+Frame took 289 miliseconds.
+Frame took 288 miliseconds.
+Frame took 289 miliseconds.
+Frame took 289 miliseconds.
+Frame took 289 miliseconds.
+Frame took 288 miliseconds.
+Frame took 289 miliseconds.
+Frame took 289 miliseconds.
+Frame took 288 miliseconds.
+Frame took 289 miliseconds.
+Frame took 289 miliseconds.
+Frame took 288 miliseconds.
+[X] compare
+[X] 16 subd -> 6 subdv
+Frame took 135 miliseconds.
+Frame took 122 miliseconds.
+Frame took 110 miliseconds.
+Frame took 110 miliseconds.
+Frame took 110 miliseconds.
+Frame took 110 miliseconds.
+Frame took 110 miliseconds.
+Frame took 110 miliseconds.
+Frame took 110 miliseconds.
+Frame took 111 miliseconds.
+Frame took 110 miliseconds.
+Frame took 110 miliseconds.
+Frame took 110 miliseconds.
+Frame took 110 miliseconds.
+24564 faces per tree
+[X] changing tree to end at 0.2 instead of 0.1
+Frame took 37 miliseconds.
+Frame took 29 miliseconds.
+Frame took 19 miliseconds.
+Frame took 19 miliseconds.
+Frame took 18 miliseconds.
+Frame took 19 miliseconds.
+Frame took 18 miliseconds.
+Frame took 19 miliseconds.
+Frame took 18 miliseconds.
+Frame took 19 miliseconds.
+Frame took 18 miliseconds.
+Frame took 18 miliseconds.
+Frame took 19 miliseconds.
+Frame took 18 miliseconds.
+Frame took 18 miliseconds.
+Frame took 20 miliseconds.
+Frame took 18 miliseconds.
+Frame took 19 miliseconds.
+Frame took 18 miliseconds.
+Frame took 18 miliseconds.
+Frame took 18 miliseconds.
+which is 56 fps so nice
 
 [ ] track down memory leaks
 

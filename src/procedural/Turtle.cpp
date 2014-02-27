@@ -8,7 +8,7 @@ Turtle::Turtle() {
 }
 
 void Turtle::pitch(float angle) {
-    *turtle_state = glm::rotate(*turtle_state, angle, glm::vec3(1.0, 0.0, 0.0));
+    *turtle_state = glm::rotate(*turtle_state, angle, glm::vec3(0.0, 1.0, 0.0));
 }
 
 void Turtle::roll(float angle) {
@@ -16,7 +16,7 @@ void Turtle::roll(float angle) {
 }
 
 void Turtle::yaw(float angle) {
-    *turtle_state = glm::rotate(*turtle_state, angle, glm::vec3(0.0, 1.0, 0.0));
+    *turtle_state = glm::rotate(*turtle_state, angle, glm::vec3(1.0, 0.0, 0.0));
 }
 
 void Turtle::forward(float amount) {

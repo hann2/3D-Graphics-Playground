@@ -1,4 +1,3 @@
-
 #include <GL/gl.h>
 #include <vector>
 
@@ -12,10 +11,10 @@ typedef struct _face_t {
 
 class IndexedFaceSet {
     public:
-        IndexedFaceSet(int n_vertices, int n_faces);
+        IndexedFaceSet();
         ~IndexedFaceSet();
 
-        void add_vertex(float * vertex);
+        void add_vertex(float * v);
         void add_face(int degree, int * corners);
         void add_texture_coordinate(float * coord);
         void add_vertex_normal(float * normal);
@@ -23,6 +22,7 @@ class IndexedFaceSet {
         float * g_vertex(int ind);
         face_t * g_face(int ind);
         float * g_texture_coordinate(int ind);
+        float * g_vertex_normal(int ind);
 
         int g_num_vertices();
         int g_num_faces();
@@ -36,6 +36,8 @@ class IndexedFaceSet {
         int g_index_buffer_size();
         int g_vertex_normal_buffer_size();
         int g_texture_coordinate_buffer_size();
+        
+        void calculate_vertex_normals();
 
         float * g_bounding_sphere();
         float * g_bounding_cube();
@@ -43,20 +45,13 @@ class IndexedFaceSet {
 
         void normalize_vec(float * v);
         float * g_face_normal(int face_ind);
-        void calculate_vertex_normals();
 
-        float * vertices;
-        float * tex_coords;
-        float * vertex_normals;
-        face_t * faces;
+        std::vector<float> vertices;
+        std::vector<float> tex_coords;
+        std::vector<float> vertex_normals;
+        std::vector<face_t> faces;
 
-        int num_vertices;
-        int num_faces;
-
-        int cur_face;
-        int cur_vertex;
-        int cur_tex_coord;
-        int cur_vertex_normal;
+        int num_triangles;
 };
 
 #endif

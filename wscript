@@ -34,9 +34,9 @@ def build(ctx):
         'src/model/Model.cpp',
 
         'src/procedural/ProceduralGenerator.cpp',
-        'src/procedural/Skeleton.cpp',
         'src/procedural/Turtle.cpp',
         'src/procedural/TreeGenerator.cpp',
+        'src/procedural/load_cylinder.cpp',
 
         'src/scene/Scene.cpp',
         'src/scene/WireframeScene.cpp',

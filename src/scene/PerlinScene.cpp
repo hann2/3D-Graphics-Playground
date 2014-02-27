@@ -45,7 +45,7 @@ void PerlinScene::setup_scene() {
             model->add_attribute(&vertices[0], sizeof(vertices), 3, "vertex_position");
             model->add_attribute(&texture_coords[0], sizeof(texture_coords), 2, "vertex_UV");
             model->add_indices(&indices[0], sizeof(indices));
-            model->add_texture(texture_data[i][j], 256, 256, GL_FLOAT, 1, "texture_sampler");
+            model->add_2d_texture(texture_data[i][j], 256, 256, GL_FLOAT, 1, "texture_sampler");
 
             glm::mat4 model_transform = glm::translate(glm::mat4(), glm::vec3((i - 1) * 2.4f, (j - 1) * 2.4f, 0.0f));
             model->add_uniform_matrix("view_transform", &view_transform[0][0]);

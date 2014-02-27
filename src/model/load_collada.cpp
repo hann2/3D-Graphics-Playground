@@ -11,6 +11,7 @@ static char * get_file_contents(const char * file_name) {
     std::ifstream t;
     t.open(file_name);
     if (!t.is_open()) {
+        std::cout << "could not find file " << file_name << "\n";
         throw(errno);
     }
     t.seekg(0, std::ios::end);
@@ -97,7 +98,7 @@ IndexedFaceSet * load_collada(const char * file_name) {
 
     int num_vertices = atoi(vertices->first_attribute("count")->value()) / 3;
 
-    IndexedFaceSet * model = new IndexedFaceSet(num_vertices, num_faces);
+    IndexedFaceSet * model = new IndexedFaceSet();
 
     char * vert_ptr = vertices->value();
 

@@ -1,14 +1,19 @@
 
 
-#include "ProceduralScene.h"
+#include "EfficientScene.h"
 #include "ProceduralGenerator.h"
 #include "TreeGenerator.h"
 #include "Model.h"
 #include "IndexedFaceSet.h"
+#include <iostream>
+#include <algorithm>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/random.hpp>
 
-void ProceduralScene::setup_scene() {
+#define PI (3.14159f)
+
+void EfficientScene::setup_scene() {
     GLint grass_shader = load_shaders("shaders/grass.vsh", "", "shaders/grass.fsh");
     Model * terrain_model = Model::create_model(grass_shader);
 
@@ -69,7 +74,7 @@ void ProceduralScene::setup_scene() {
     float * grass_text = grass_texture(256, 256);
     terrain_model->add_2d_texture(grass_text, 256, 256, GL_FLOAT, 1, "texture_sampler");
 
-    glm::mat4 view_transform = glm::lookAt(glm::vec3(50,20,10), glm::vec3(32, 10, 32), glm::vec3(0,1,0));
+    glm::mat4 view_transform = glm::lookAt(glm::vec3(-20,40,-20), glm::vec3(12, 10, 12), glm::vec3(0,1,0));
     glm::mat4 model_transform = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f));
     terrain_model->add_uniform_matrix("view_transform", &view_transform[0][0]);
     terrain_model->add_uniform_matrix("model_transform", &model_transform[0][0]);
@@ -81,11 +86,24 @@ void ProceduralScene::setup_scene() {
     free(terrain_tex_coords);
     free(grass_text);
 
-    
-    Model * tree_model = TreeGenerator::generate_normal_tree();
 
-    model_transform =
-        glm::translate(glm::mat4(), glm::vec3(32.0, terrain[32 * mesh_size + 32] * 20, 32.0));
+    Model * tree_model = TreeGenerator::generate_normal_tree();
+    tree_model->set_num_instances(100);
+
+    float * instance_texture = (float *) calloc(512, sizeof(float));
+    for (int i = 0; i < 100; i++) {
+        // rotation
+        instance_texture[i] = ((float) rand()) / RAND_MAX;
+        // scale
+        instance_texture[i + 100] = std::max(glm::gaussRand(1.0, 0.5), 0.1);
+        int x = (i / 10) * 6 + 2;
+        int y = (i % 10) * 6 + 2;
+        // height
+        instance_texture[i + 200] = terrain[x * mesh_size + y];
+    }
+    tree_model->add_1d_texture(instance_texture, 512, GL_FLOAT, 1, "tree_positioning");
+
+    model_transform = glm::mat4();
     tree_model->add_uniform_matrix("view_transform", &view_transform[0][0]);
     tree_model->add_uniform_matrix("model_transform", &model_transform[0][0]);
     models.emplace(tree_model->g_shader_program(), tree_model);

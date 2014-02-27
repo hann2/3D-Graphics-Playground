@@ -3,9 +3,9 @@
 #ifndef _TREE_GENERATOR_H
 #define _TREE_GENERATOR_H
 
+#include "Model.h"
 #include "IndexedFaceSet.h"
 #include "Turtle.h"
-#include "Skeleton.h"
 #include <vector>
 
 typedef struct _branch_params_t {
@@ -17,18 +17,20 @@ typedef struct _branch_params_t {
 
 class TreeGenerator {
     public:
-        static IndexedFaceSet * generate_normal_tree();
-        static IndexedFaceSet * generate_willow_tree();
-        TreeGenerator(Turtle t, Skeleton s, branch_params_t branch_1, branch_params_t branch_2, float s_m);
+        static Model * generate_normal_tree();
+        static Model * generate_willow_tree();
+        static Model * generate_tree(branch_params_t b1, branch_params_t b2, float s_min, float s, float w);
+        TreeGenerator(IndexedFaceSet * m, IndexedFaceSet * c, Turtle * t, branch_params_t branch_1, branch_params_t branch_2, float s_m);
     private:
         void generate_tree_h(float s, float w);
-        std::vector<int> bone_stack;
-        Turtle turtle;
-        Skeleton skeleton;
+        void add_bone(float s, float w);
+        IndexedFaceSet * mesh;
+        IndexedFaceSet * cylinder;
+        Turtle * turtle;
         branch_params_t b1;
         branch_params_t b2;
         float s_min;
+        std::vector<int> indices;
 };
 
 #endif
-
