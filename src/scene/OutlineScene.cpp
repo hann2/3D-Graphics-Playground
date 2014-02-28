@@ -108,6 +108,9 @@ void OutlineScene::render(int w, int h) {
     };
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+    if (glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Something wrong with FBO\n";
+    }
     glDrawBuffers(3, buffers);
     glClearColor(0,0,-1000,0);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
