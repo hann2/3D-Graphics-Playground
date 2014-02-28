@@ -14,6 +14,7 @@
 #include "ProceduralScene.h"
 #include "PerlinScene.h"
 #include "EfficientScene.h"
+#include "OutlineScene.h"
 
 // fps in hz
 #define FRAME_RATE 60
@@ -62,22 +63,30 @@ void QGLRenderThread::run() {
     // TreeScene scene;
     // ProceduralScene scene;
     // PerlinScene scene;
-    EfficientScene scene;
+    // EfficientScene scene;
+    OutlineScene scene(w, h);
     scene.setup_scene();
-
-    while (doRendering) {
-        long int start = QDateTime::currentMSecsSinceEpoch();
-        if (doResize) {
-            GLResize(w, h);
-            doResize = false;
-        }
-
+    
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         scene.render(w, h);
 
         FrameCounter++;
         GLFrame->swapBuffers();
+
+    while (doRendering) {
+        long int start = QDateTime::currentMSecsSinceEpoch();
+        // if (doResize) {
+        //     GLResize(w, h);
+        //     doResize = false;
+        // }
+
+        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // scene.render(w, h);
+
+        // FrameCounter++;
+        // GLFrame->swapBuffers();
 
         GLenum errCode;
         if ((errCode = glGetError()) != GL_NO_ERROR) {
@@ -87,7 +96,7 @@ void QGLRenderThread::run() {
         }
 
         int time_elapsed = QDateTime::currentMSecsSinceEpoch() - start;
-        std::cout << "Frame took " << time_elapsed << " miliseconds.\n";
+        // std::cout << "Frame took " << time_elapsed << " miliseconds.\n";
         if (time_elapsed < FRAME_LENGTH) {
             msleep(FRAME_LENGTH - time_elapsed);
         }

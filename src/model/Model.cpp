@@ -62,7 +62,6 @@ void Model::add_indices(int * buffer, int size) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices_buffer_id);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, buffer, GL_STATIC_DRAW);
     num_indices = size;
-    std::cout << num_indices / 12 << "\n";
 }
 
 void Model::add_2d_texture(void * data, int width, int height, GLenum type, int channels, std::string texture_name) {

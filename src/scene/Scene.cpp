@@ -1,5 +1,6 @@
 
 #include "Scene.h"
+#include <iostream>
 #include <fstream>
 #include <streambuf>
 #include <glm/glm.hpp>
@@ -31,6 +32,10 @@ GLuint Scene::load_shader(std::string file_name, GLenum shader_type) {
     GLuint id = glCreateShader(shader_type);
     std::string shader_code;
     std::ifstream file_stream(file_name);
+    if (file_stream.fail()) {
+        std::cout << "could not find shader file " << file_name << "\n";
+        throw 0;
+    }
 
     file_stream.seekg(0, std::ios::end);   
     shader_code.reserve(file_stream.tellg());
@@ -46,10 +51,11 @@ GLuint Scene::load_shader(std::string file_name, GLenum shader_type) {
     GLint result = GL_FALSE;
     glGetShaderiv(id, GL_COMPILE_STATUS, &result);
     glGetShaderiv(id, GL_INFO_LOG_LENGTH, &log_length);
-    if ( log_length > 0 ){
+    if ( log_length > 1 ){
         char * error_message = (char *) calloc(log_length + 1, sizeof(char));
         glGetShaderInfoLog(id, log_length, NULL, error_message);
-        printf("%s\n", error_message);
+        std::cout << "Error when compiling shader " << file_name << "\n";
+        std::cout << error_message << "\n";
         free(error_message);
     }
 
@@ -75,7 +81,7 @@ GLuint Scene::load_shaders(std::string v_file, std::string g_file, std::string f
     GLint result = GL_FALSE;
     glGetProgramiv(program_id, GL_LINK_STATUS, &result);
     glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &log_length);
-    if ( log_length > 0 ){
+    if ( log_length > 1 ){
         char * error_message = (char *) calloc(log_length + 1, sizeof(char));
         glGetProgramInfoLog(program_id, log_length, NULL, error_message);
         printf("%s\n", error_message);
