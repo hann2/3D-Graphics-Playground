@@ -30,7 +30,6 @@ void Model::set_draw_mode(GLenum mode) {
     draw_mode = mode;
 }
 
-
 GLint Model::g_shader_program() {
     return shader_id;
 }

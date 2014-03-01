@@ -112,7 +112,7 @@ void OutlineScene::render(int w, int h) {
         std::cout << "Something wrong with FBO\n";
     }
     glDrawBuffers(3, buffers);
-    glClearColor(0,0,-1000,0);
+    glClearColor(0,0,-100,0);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(geometry_pass_shader);

@@ -4,9 +4,12 @@
 in vec3 vp;
 in vec3 vn;
 flat in int m;
-out vec4 fragData[3];
+layout(location = 0) out vec3 pos;
+layout(location = 1) out vec3 norm;
+layout(location = 2) out int mat;
+
 void main() {
-    fragData[0].rgb = vec3(1.0, 1.0, 0.0);//vp;
-    fragData[1].rgb = vec3(0.0, 1.0, 0.0);//normalize(vn);
-    fragData[2].r = 2;
+    pos = vec3(1.0, 1.0, 0.0);//vp;
+    norm = vec3(0.0, 1.0, 0.0);//normalize(vn);
+    mat = 2;
 }

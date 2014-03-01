@@ -16,7 +16,7 @@ void main() {
         c = norm;
     }
 
-    if (depth == -1000.0) {
+    if (depth == -100.0) {
         c = vec3(0.0, 0.0, 1.0);
     }
     
