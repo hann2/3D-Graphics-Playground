@@ -22,7 +22,7 @@ void Scene::render(int w, int h) {
                 glUseProgram(shader_program_id);
             }
             Model * model = it->second;
-            model->add_uniform_matrix("perspective_transform", &perspective_transform[0][0]);
+            model->add_uniform("perspective_transform", &perspective_transform[0][0], 16);
             model->render_model();
         }
     }

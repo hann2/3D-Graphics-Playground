@@ -48,8 +48,8 @@ void PerlinScene::setup_scene() {
             model->add_2d_texture(texture_data[i][j], 256, 256, GL_FLOAT, 1, "texture_sampler");
 
             glm::mat4 model_transform = glm::translate(glm::mat4(), glm::vec3((i - 1) * 2.4f, (j - 1) * 2.4f, 0.0f));
-            model->add_uniform_matrix("view_transform", &view_transform[0][0]);
-            model->add_uniform_matrix("model_transform", &model_transform[0][0]);
+            model->add_uniform("view_transform", &view_transform[0][0], 16);
+            model->add_uniform("model_transform", &model_transform[0][0], 16);
             models.emplace(shaders[i][j], model);
         }
     }

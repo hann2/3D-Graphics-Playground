@@ -44,7 +44,8 @@ def build(ctx):
         'src/scene/TreeScene.cpp',
         'src/scene/PerlinScene.cpp',
         'src/scene/EfficientScene.cpp',
-        'src/scene/OutlineScene.cpp'
+        'src/scene/DeferredScene.cpp',
+        'src/scene/ToonScene.cpp'
     ]
     ctx.program(
         source = ' '.join(src_files),

@@ -71,8 +71,8 @@ void ProceduralScene::setup_scene() {
 
     glm::mat4 view_transform = glm::lookAt(glm::vec3(50,20,10), glm::vec3(32, 10, 32), glm::vec3(0,1,0));
     glm::mat4 model_transform = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f));
-    terrain_model->add_uniform_matrix("view_transform", &view_transform[0][0]);
-    terrain_model->add_uniform_matrix("model_transform", &model_transform[0][0]);
+    terrain_model->add_uniform("view_transform", &view_transform[0][0], 16);
+    terrain_model->add_uniform("model_transform", &model_transform[0][0], 16);
     models.emplace(grass_shader, terrain_model);
 
     free(terrain_vertices);
@@ -81,13 +81,13 @@ void ProceduralScene::setup_scene() {
     free(terrain_tex_coords);
     free(grass_text);
 
-    
-    Model * tree_model = TreeGenerator::generate_normal_tree();
+    GLint shader = Scene::load_shaders("shaders/default.vsh", "shaders/wire.gsh", "shaders/wire.fsh");
+    Model * tree_model = TreeGenerator::generate_normal_tree(shader);
 
     model_transform =
         glm::translate(glm::mat4(), glm::vec3(32.0, terrain[32 * mesh_size + 32] * 20, 32.0));
-    tree_model->add_uniform_matrix("view_transform", &view_transform[0][0]);
-    tree_model->add_uniform_matrix("model_transform", &model_transform[0][0]);
+    tree_model->add_uniform("view_transform", &view_transform[0][0], 16);
+    tree_model->add_uniform("model_transform", &model_transform[0][0], 16);
     models.emplace(tree_model->g_shader_program(), tree_model);
 
     free(terrain);

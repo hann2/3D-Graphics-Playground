@@ -14,7 +14,7 @@
 #include "ProceduralScene.h"
 #include "PerlinScene.h"
 #include "EfficientScene.h"
-#include "OutlineScene.h"
+#include "ToonScene.h"
 
 // fps in hz
 #define FRAME_RATE 60
@@ -59,34 +59,32 @@ void QGLRenderThread::init_gl_context() {
 void QGLRenderThread::run() {
 
     init_gl_context();
+    if (doResize) {
+        GLResize(w, h);
+        doResize = false;
+    }
+
     // WireframeScene scene;
     // TreeScene scene;
     // ProceduralScene scene;
     // PerlinScene scene;
     // EfficientScene scene;
-    OutlineScene scene(w, h);
+    ToonScene scene;
     scene.setup_scene();
-    
+
+    while (doRendering) {
+        long int start = QDateTime::currentMSecsSinceEpoch();
+        if (doResize) {
+            GLResize(w, h);
+            doResize = false;
+        }
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         scene.render(w, h);
 
         FrameCounter++;
         GLFrame->swapBuffers();
-
-    while (doRendering) {
-        long int start = QDateTime::currentMSecsSinceEpoch();
-        // if (doResize) {
-        //     GLResize(w, h);
-        //     doResize = false;
-        // }
-
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // scene.render(w, h);
-
-        // FrameCounter++;
-        // GLFrame->swapBuffers();
 
         GLenum errCode;
         if ((errCode = glGetError()) != GL_NO_ERROR) {

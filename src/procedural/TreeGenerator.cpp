@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-Model * TreeGenerator::generate_normal_tree() {
+Model * TreeGenerator::generate_normal_tree(GLint shader) {
     branch_params_t b1 = {
         .alpha = 30.0,
         .phi = 137.0,
@@ -20,10 +20,10 @@ Model * TreeGenerator::generate_normal_tree() {
         .s_scale = 0.8,
         .w_scale = 0.7071
     };
-    return generate_tree(b1, b2, 0.2, 1.0, 0.2);
+    return generate_tree(b1, b2, 0.2, 1.0, 0.2, shader);
 }
 
-Model * TreeGenerator::generate_willow_tree() {
+Model * TreeGenerator::generate_willow_tree(GLint shader) {
     float q = 0.6;
     float e = 0.5;
     branch_params_t b1 = {
@@ -38,10 +38,10 @@ Model * TreeGenerator::generate_willow_tree() {
         .s_scale = 0.8,
         .w_scale = (float) pow(1 - q, e)
     };
-    return generate_tree(b1, b2, 0.2, 1.0, 0.2);
+    return generate_tree(b1, b2, 0.2, 1.0, 0.2, shader);
 }
 
-Model * TreeGenerator::generate_tree(branch_params_t b1, branch_params_t b2, float s_min, float s, float w) {
+Model * TreeGenerator::generate_tree(branch_params_t b1, branch_params_t b2, float s_min, float s, float w, GLint shader) {
     IndexedFaceSet * cylinder = load_cylinder(6);
     IndexedFaceSet * geometry = new IndexedFaceSet();
     Turtle * turtle = new Turtle();
@@ -49,22 +49,21 @@ Model * TreeGenerator::generate_tree(branch_params_t b1, branch_params_t b2, flo
     TreeGenerator t(geometry, cylinder, turtle, b1, b2, s_min);
     t.generate_tree_h(s, w);
 
-    Model * tree_model = Model::create_model(Scene::load_shaders("shaders/tree.vsh", "shaders/wire.gsh", "shaders/wire.fsh"));
+    Model * tree_model = Model::create_model(shader);
 
     float * tree_vertices = geometry->g_vertex_buffer();
-    // float * tree_normals = geometry->g_vertex_normal_buffer();
-    // float * tree_tex_coords = geometry->g_texture_coordinate_buffer();
-
     int tree_vertices_size = geometry->g_vertex_buffer_size();
-    // int tree_normals_size = geometry->g_vertex_normal_buffer_size();
-    // int tree_tex_coords_size = geometry->g_texture_coordinate_buffer_size();
-
     tree_model->add_attribute(tree_vertices, tree_vertices_size, 3, "vertex_position");
-    // tree_model->add_attribute(tree_normals, tree_normals_size, 3, "vertex_normal");
-    // tree_model->add_attribute(tree_tex_coords, tree_tex_coords_size, 2, "vertex_UV");
-
     free(tree_vertices);
-    // free(tree_normals);
+
+    float * tree_normals = geometry->g_vertex_normal_buffer();
+    int tree_normals_size = geometry->g_vertex_normal_buffer_size();
+    tree_model->add_attribute(tree_normals, tree_normals_size, 3, "vertex_normal");
+    free(tree_normals);
+
+    // float * tree_tex_coords = geometry->g_texture_coordinate_buffer();
+    // int tree_tex_coords_size = geometry->g_texture_coordinate_buffer_size();
+    // tree_model->add_attribute(tree_tex_coords, tree_tex_coords_size, 2, "vertex_UV");
     // free(tree_tex_coords);
 
     // float * grass_text = grass_texture(256, 256);

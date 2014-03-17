@@ -22,8 +22,8 @@ void WireframeScene::setup_scene() {
 
     glm::mat4 view_transform = glm::lookAt(glm::vec3(1,3,8), glm::vec3(0,0,0), glm::vec3(0,1,0));
     glm::mat4 model_transform = glm::translate(glm::mat4(), glm::vec3(-2.0, 0.0, 0.0));
-    suzanne_model->add_uniform_matrix("view_transform", &view_transform[0][0]);
-    suzanne_model->add_uniform_matrix("model_transform", &model_transform[0][0]);
+    suzanne_model->add_uniform("view_transform", &view_transform[0][0], 16);
+    suzanne_model->add_uniform("model_transform", &model_transform[0][0], 16);
     models.emplace(wire_shader, suzanne_model);
 
     free(suzanne_vertices);
@@ -42,8 +42,8 @@ void WireframeScene::setup_scene() {
     cylinder_model->add_indices(cylinder_indices, cylinder_indices_size);
 
     model_transform = glm::translate(glm::mat4(), glm::vec3(2.0, 0.0, 0.0));
-    cylinder_model->add_uniform_matrix("view_transform", &view_transform[0][0]);
-    cylinder_model->add_uniform_matrix("model_transform", &model_transform[0][0]);
+    cylinder_model->add_uniform("view_transform", &view_transform[0][0], 16);
+    cylinder_model->add_uniform("model_transform", &model_transform[0][0], 16);
     models.emplace(wire_shader, cylinder_model);
 
     free(cylinder_vertices);

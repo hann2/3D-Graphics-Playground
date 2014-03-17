@@ -126,8 +126,9 @@ int IndexedFaceSet::g_index_buffer_size() {
 
 void IndexedFaceSet::normalize_vec(float * v) {
     float length = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-    if (length < 0.001) {
-        std::cout << "trying to normalize zero vector\n";
+    if (length < 0.0001) {
+        std::cout << "trying to normalize near singular vector. length: " << length << "\n";
+        return;
     }
     v[0] /= length;
     v[1] /= length;

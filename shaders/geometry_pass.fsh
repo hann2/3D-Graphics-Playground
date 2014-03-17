@@ -3,13 +3,13 @@
 
 in vec3 vp;
 in vec3 vn;
-flat in int m;
-layout(location = 0) out vec3 pos;
-layout(location = 1) out vec3 norm;
-layout(location = 2) out int mat;
+in vec3 c;
+layout(location = 0) out vec4 positions;
+layout(location = 1) out vec4 normals;
+layout(location = 2) out vec4 colors;
 
 void main() {
-    pos = vec3(1.0, 1.0, 0.0);//vp;
-    norm = vec3(0.0, 1.0, 0.0);//normalize(vn);
-    mat = 2;
+    positions = vec4(vp, 1.0);
+    normals = vec4(vn, 0.0);
+    colors = vec4(c, 1.0);
 }
