@@ -1,13 +1,14 @@
 
-#include "ToonScene.h"
+#include "SSAOScene.h"
 #include "Model.h"
 #include "IndexedFaceSet.h"
 #include "load_collada.h"
 #include "TreeGenerator.h"
 #include <glm/glm.hpp>
+#include <glm/gtc/random.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-void ToonScene::setup_scene() {
+void SSAOScene::setup_scene() {
     geometry_pass_shader = load_shaders("shaders/geometry_pass.vsh", "", "shaders/geometry_pass.fsh");
 
     Model * suzanne_model = Model::create_model(geometry_pass_shader);
@@ -45,7 +46,7 @@ void ToonScene::setup_scene() {
     normal_tree_model->add_uniform("color", &color[0], 3);
     models.emplace(geometry_pass_shader, normal_tree_model);
 
-    lighting_pass_shader = load_shaders("shaders/lighting_pass.vsh", "", "shaders/deferred_toon.fsh");
+    lighting_pass_shader = load_shaders("shaders/lighting_pass.vsh", "", "shaders/deferred_ssao.fsh");
     billboard_model = Model::create_model(lighting_pass_shader);
 
     GLfloat billboard_vertices [] = {
@@ -64,10 +65,20 @@ void ToonScene::setup_scene() {
 
     glm::vec3 sun = glm::normalize(glm::vec3(0.0f, 1.0f, 8.0f));
     billboard_model->add_uniform("sun", &sun[0], 3);
-    billboard_model->add_uniform("camera", &camera_position[0], 3);
+
+    float * directions = (float *) malloc(2 * 16 * sizeof(float));
+    for (int i = 0; i < 16; i++) {
+        float length = glm::gaussRand(0.0, 5.0);
+        float angle = 360 * (((float) rand()) / RAND_MAX);
+        // x
+        directions[i * 2] = length * cos(angle);
+        // y
+        directions[i * 2 + 1] = length * sin(angle);
+    }
+    billboard_model->add_uniform("direction_samples", directions, 2, 16);
 }
 
-void ToonScene::setup_g_buffers() {
+void SSAOScene::setup_g_buffers() {
     add_g_buffer(GL_RGBA32F, GL_RGBA, GL_FLOAT, "positions");
     add_g_buffer(GL_RGBA16F, GL_RGBA, GL_FLOAT, "normals");
     add_g_buffer(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, "colors");

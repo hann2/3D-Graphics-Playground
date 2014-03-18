@@ -15,6 +15,7 @@
 #include "PerlinScene.h"
 #include "EfficientScene.h"
 #include "ToonScene.h"
+#include "SSAOScene.h"
 
 // fps in hz
 #define FRAME_RATE 60
@@ -69,7 +70,8 @@ void QGLRenderThread::run() {
     // ProceduralScene scene;
     // PerlinScene scene;
     // EfficientScene scene;
-    ToonScene scene;
+    // ToonScene scene;
+    SSAOScene scene;
     scene.setup_scene();
 
     while (doRendering) {

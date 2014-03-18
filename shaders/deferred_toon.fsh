@@ -7,6 +7,9 @@ uniform sampler2D colors;
 uniform vec3 sun;
 uniform vec3 camera;
 const int cel_levels = 4;
+vec3 pos;
+vec3 norm;
+vec3 col;
 
 vec3 laplacian(sampler2D t, ivec2 c) {
     return (4 * texelFetch(t, c, 0) -
@@ -19,8 +22,8 @@ vec3 laplacian(sampler2D t, ivec2 c) {
 bool line_check(ivec2 coord) {
     float delta_z = abs(laplacian(positions, coord).z);
     // float delta_pos = length(laplacian(positions, coord));
-    vec3 norm = texelFetch(normals, ivec2(gl_FragCoord.xy), 0).xyz;
-    float delta_norm = abs(dot(norm, camera));
+    norm = texelFetch(normals, coord, 0).xyz;
+    float delta_norm = abs(dot(norm, normalize(camera - pos)));
     if (delta_z > 0.1f || delta_norm < 0.3f) {
         return true;
     }
@@ -45,9 +48,9 @@ bool is_line(ivec2 coord, int thickness) {
 
 void main() {
     ivec2 pixel_coord = ivec2(gl_FragCoord.xy);
-    vec3 pos = texelFetch(positions, pixel_coord, 0).xyz;
-    vec3 norm = texelFetch(normals, pixel_coord, 0).xyz;
-    vec3 col = texelFetch(colors, pixel_coord, 0).rgb;
+    pos = texelFetch(positions, pixel_coord, 0).xyz;
+    norm = texelFetch(normals, pixel_coord, 0).xyz;
+    col = texelFetch(colors, pixel_coord, 0).rgb;
     float depth = pos.z;
     vec3 c = vec3(0.0, 0.0, 0.0);
 
@@ -58,8 +61,8 @@ void main() {
         if (is_line(pixel_coord, 5)) {
             c = vec3(0.0, 0.0, 0.0);
         } else {
-            float light = floor(((0.1 + 0.6 * dot(norm, sun)) * cel_levels)) / cel_levels;
-            c = light * col;
+            int level = int((0.3 + 0.7 * dot(norm, sun)) * cel_levels);
+            c = col * level / cel_levels;
         }
     }
 

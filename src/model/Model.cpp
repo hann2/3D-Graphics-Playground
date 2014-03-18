@@ -11,9 +11,7 @@ Model * Model::create_model(GLint shader_id) {
 Model::Model(GLint s) {
     attributes = std::vector<model_attribute_t>();
     textures = std::vector<model_texture_t>();
-    fmatrices = std::unordered_map<std::string, model_uniform_t>();
-    fvectors = std::unordered_map<std::string, model_uniform_t>();
-    iflags = std::unordered_map<std::string, model_uniform_t>();
+    uniforms = std::unordered_map<std::string, model_uniform_t>();
     num_indices = -1;
     indices_buffer_id = -1;
     num_instances = -1;
@@ -125,71 +123,78 @@ void Model::add_1d_texture(void * data, int width, GLenum type, int channels, st
     textures.push_back(texture);
 }
 
-// currently supports 4x4 matrices and 3 vectors
 void Model::add_uniform(std::string uniform_name, float * data, int channels) {
-    std::unordered_map<std::string, model_uniform_t> * map;
-    switch (channels) {
-        case 16:
-            map = &fmatrices;
-            break;
-        case 3:
-            map = &fvectors;
-            break;
-        default:
-            std::cout << "unsupported uniform dimension for floats\n";
-            return;
-    }
-    add_uniform_h(uniform_name, data, channels, map, sizeof(float));
+    add_uniform(uniform_name, data, channels, 1);
+}
+
+void Model::add_uniform(std::string uniform_name, float * data, int channels, int n) {
+    add_uniform_h(uniform_name, data, channels, n, GL_FLOAT, sizeof(float));
 }
 
 void Model::add_uniform(std::string uniform_name, int * data, int channels) {
-    std::unordered_map<std::string, model_uniform_t> * map;
-    switch (channels) {
-        case 1:
-            map = &iflags;
-            break;
-        default:
-            std::cout << "unsupported uniform dimension for ints\n";
-            return;
-    }
-    add_uniform_h(uniform_name, data, channels, map, sizeof(int));
+    add_uniform(uniform_name, data, channels, 1);
 }
 
-void Model::add_uniform_h(std::string uniform_name, void * data, int channels, std::unordered_map<std::string, model_uniform_t> * map, size_t size) {
+void Model::add_uniform(std::string uniform_name, int * data, int channels, int n) {
+    add_uniform_h(uniform_name, data, channels, n, GL_INT, sizeof(int));
+}
+
+void Model::add_uniform_h(std::string uniform_name, void * data, int channels, int n, GLenum type, size_t size) {
     GLint uniform_location = glGetUniformLocation(shader_id, uniform_name.c_str());
     if (uniform_location == -1) {
         std::cout << "could not find attribute " << uniform_name << ".\n";
         return;
     }
 
-    if (map->count(uniform_name) == 0) {
-        GLfloat * copied_data = (GLfloat *) malloc(size * channels);
-        memcpy(copied_data, data, size * channels);
+    if (uniforms.count(uniform_name) == 0) {
+        GLfloat * copied_data = (GLfloat *) malloc(size * channels * n);
+        memcpy(copied_data, data, size * channels * n);
         model_uniform_t uniform = {
-            .uniform_data = copied_data,
-            .uniform_location = uniform_location
+            .data = copied_data,
+            .location = uniform_location,
+            .type = type,
+            .channels = channels,
+            .n = n
         };
-        map->emplace(uniform_name, uniform);
+        uniforms.emplace(uniform_name, uniform);
     } else {
-        model_uniform_t u = map->at(uniform_name);
-        memcpy(u.uniform_data, data, size * channels);
+        model_uniform_t uniform = uniforms.at(uniform_name);
+        memcpy(uniform.data, data, size * channels * n);
     }
 }
 
 void Model::render_model() {
-    for (auto kvPair : fmatrices) {
-        model_uniform_t matrix = kvPair.second;
-        glUniformMatrix4fv(matrix.uniform_location, 1, GL_FALSE, (GLfloat *) matrix.uniform_data);
-    }
+    for (auto kvPair : uniforms) {
+        model_uniform_t u = kvPair.second;
+        if (u.type == GL_FLOAT) {
+            switch (u.channels) {
+                case 1:
+                    glUniform1fv(u.location, u.n, (GLfloat *) u.data);
+                    break;
+                case 2:
+                    glUniform2fv(u.location, u.n, (GLfloat *) u.data);
+                    break;
+                case 3:
+                    glUniform3fv(u.location, u.n, (GLfloat *) u.data);
+                    break;
+                case 4:
+                    glUniform4fv(u.location, u.n, (GLfloat *) u.data);
+                    break;
+                case 9:
+                    glUniformMatrix3fv(u.location, u.n, GL_FALSE, (GLfloat *) u.data);
+                    break;
+                case 16:
+                    glUniformMatrix4fv(u.location, u.n, GL_FALSE, (GLfloat *) u.data);
+                    break;
+            }
+        } else if (u.type == GL_INT){
+            switch (u.channels) {
+                case 1:
+                    glUniform1i(u.location, *((GLint *) u.data));
+                    break;
+            }
 
-    for (auto kvPair : fvectors) {
-        model_uniform_t vector = kvPair.second;
-        glUniform3fv(vector.uniform_location, 1, (GLfloat *) vector.uniform_data);
-    }
-
-    for (auto kvPair : iflags) {
-        model_uniform_t flag = kvPair.second;
-        glUniform1i(flag.uniform_location, *((GLint *) flag.uniform_data));
+        }
     }
 
     for (model_texture_t texture : textures) {
