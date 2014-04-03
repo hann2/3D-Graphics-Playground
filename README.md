@@ -20,4 +20,14 @@ On Optimus laptops running Linux this means using bumblebee.
 With bumblebee installed run "optirun build/demo" to run the program.
 
 
-
+Future additions include
+ * Hard shadow mapping.
+ * Bump mapping.
+ * Parallax mapping.
+ * Water shading.
+ * Water surface simulation.
+ * Displacement animation.
+ * Particle simulation.
+ * Boid flocking.
+ * Rigged animation.
+ * Catmull-clark subdivision.
