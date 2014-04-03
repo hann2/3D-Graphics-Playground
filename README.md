@@ -1,12 +1,17 @@
 
-I implemented my qt app and gl code completely independant of the given source code.
-I did this because I don't like working in Windows, or with IDEs (like QtCreator).
+3D Graphics Playground contains implementations of many graphics techniques.
 
-I used the code found here: https://www.thasler.org/blog/?p=36 as the base of my application.
+ * Wireframe rendering implemented with shaders.
+ * 3D turtle graphics for tree generation.
+ * Perlin noise for texture and terrain generation.
+ * Deferred rendering.
+ * Toon shading (using deferred rendering).
+ * Screen space ambient occlusion, or SSAO (using deferred rendering).
+
 
 The code builds and runs in Linux with waf, which uses python.
 It should be able to build in Windows with a valid python install, but I have not tried.
-To build, run "python waf configure build" from the "ex1" directory.
+To build, run "python waf configure build".
 
 The executable is made in "build/demo".
 
