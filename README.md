@@ -7,6 +7,10 @@
  * Deferred rendering.
  * Toon shading (using deferred rendering).
  * Screen space ambient occlusion, or SSAO (using deferred rendering).
+ * Hard shadow mapping.
+ * Bump mapping.
+ * Parallax mapping.
+ * Particle simulation.
 
 
 The code builds and runs in Linux with waf, which uses python.
@@ -21,13 +25,9 @@ With bumblebee installed run "optirun build/demo" to run the program.
 
 
 Future additions include
- * Hard shadow mapping.
- * Bump mapping.
- * Parallax mapping.
  * Water shading.
  * Water surface simulation.
  * Displacement animation.
- * Particle simulation.
  * Boid flocking.
  * Rigged animation.
  * Catmull-clark subdivision.

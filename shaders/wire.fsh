@@ -6,7 +6,7 @@ noperspective in vec3 dist;
 out vec4 fragColor;
 
 void main(void) {
-    float d = min(dist[0],min(dist[1],dist[2]));
+    float d = min(dist[0], min(dist[1], dist[2]));
 
     float I = exp2(-4000*d*d);
 

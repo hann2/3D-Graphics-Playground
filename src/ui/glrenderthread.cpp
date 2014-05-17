@@ -75,8 +75,8 @@ void QGLRenderThread::run() {
     // EfficientScene scene;
     // ToonScene scene;
     // SSAOScene scene;
-    // ShadowScene scene;
-    ParallaxScene scene;
+    ShadowScene scene;
+    // ParallaxScene scene;
     // WaterScene scene;
     scene.setup_scene();
     int t = 0;
