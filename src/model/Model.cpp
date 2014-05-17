@@ -81,7 +81,7 @@ void Model::add_2d_texture(void * data, int width, int height, GLenum type, int 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, type, data);
     glGenerateMipmap(GL_TEXTURE_2D);
-    GLuint texture_unit = GL_TEXTURE0 + textures.size();
+    GLuint texture_unit = textures.size();
 
     model_texture_t texture = {
         .texture_unit = texture_unit,
@@ -111,7 +111,7 @@ void Model::add_1d_texture(void * data, int width, GLenum type, int channels, st
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexImage1D(GL_TEXTURE_1D, 0, format, width, 0, format, type, data);
-    GLuint texture_unit = GL_TEXTURE0 + textures.size();
+    GLuint texture_unit = textures.size();
 
     model_texture_t texture = {
         .texture_unit = texture_unit,
@@ -142,7 +142,7 @@ void Model::add_uniform(std::string uniform_name, int * data, int channels, int 
 void Model::add_uniform_h(std::string uniform_name, void * data, int channels, int n, GLenum type, size_t size) {
     GLint uniform_location = glGetUniformLocation(shader_id, uniform_name.c_str());
     if (uniform_location == -1) {
-        std::cout << "could not find attribute " << uniform_name << ".\n";
+        std::cout << "could not find uniform " << uniform_name << ".\n";
         return;
     }
 
@@ -197,16 +197,33 @@ void Model::render_model() {
         }
     }
 
+
+    GLenum errCode;
+    if ((errCode = glGetError()) != GL_NO_ERROR) {
+        std::cout << "uniform\n";
+        std::cout << gluErrorString(errCode) << "\n";
+        // doRendering = false;
+    }
     for (model_texture_t texture : textures) {
-        glActiveTexture(texture.texture_unit);
+        glActiveTexture(texture.texture_unit + GL_TEXTURE0);
         glBindTexture(texture.texture_type, texture.texture_id);
-        glUniform1i(texture.texture_uniform_id, 0);
+        glUniform1i(texture.texture_uniform_id, texture.texture_unit);
+    }
+    if ((errCode = glGetError()) != GL_NO_ERROR) {
+        std::cout << "texture\n";
+        std::cout << gluErrorString(errCode) << "\n";
+        // doRendering = false;
     }
 
     for (model_attribute_t attribute : attributes) {
         glEnableVertexAttribArray(attribute.attribute_id);
         glBindBuffer(GL_ARRAY_BUFFER, attribute.buffer_id);
         glVertexAttribPointer(attribute.attribute_id, attribute.num_channels, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+    }
+    if ((errCode = glGetError()) != GL_NO_ERROR) {
+        std::cout << "attribute\n";
+        std::cout << gluErrorString(errCode) << "\n";
+        // doRendering = false;
     }
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices_buffer_id);
@@ -215,9 +232,16 @@ void Model::render_model() {
     } else {
         glDrawElements(draw_mode, num_indices, GL_UNSIGNED_INT, NULL);
     }
+    if ((errCode = glGetError()) != GL_NO_ERROR) {
+        std::cout << "draw elements\n";
+        std::cout << gluErrorString(errCode) << "\n";
+        // doRendering = false;
+    }
 
     for (model_attribute_t attribute : attributes) {
         glDisableVertexAttribArray(attribute.attribute_id);
     }
+
+    glActiveTexture(GL_TEXTURE0);
 }
 

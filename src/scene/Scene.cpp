@@ -28,6 +28,26 @@ void Scene::render(int w, int h) {
     }
 }
 
+void Scene::render(int w, int h, float t) {
+    glm::mat4 perspective_transform = glm::perspective(45.0f, ((float)w) / h, 0.1f, 1000.0f);
+
+    GLint shader_program_id = -1;
+    for (unsigned int i = 0; i < models.bucket_count(); i++) {
+        for (auto it = models.begin(i); it != models.end(i); it++) {
+            GLint temp = it->first;
+            if (temp != shader_program_id) {
+                shader_program_id = temp;
+                glUseProgram(shader_program_id);
+            }
+            Model * model = it->second;
+            model->add_uniform("perspective_transform", &perspective_transform[0][0], 16);
+            model->add_uniform("t", &t, 1);
+
+            model->render_model();
+        }
+    }
+}
+
 GLuint Scene::load_shader(std::string file_name, GLenum shader_type) {
     GLuint id = glCreateShader(shader_type);
     std::string shader_code;

@@ -47,10 +47,10 @@ class Model {
         void add_uniform(std::string uniform_name, float * data, int channels, int n);
         void add_uniform(std::string uniform_name, int * data, int channels);
         void add_uniform(std::string uniform_name, int * data, int channels, int n);
+        std::vector<model_texture_t> textures;
     private:
         void add_uniform_h(std::string uniform_name, void * data, int channels, int n, GLenum type, size_t size);
         std::vector<model_attribute_t> attributes;
-        std::vector<model_texture_t> textures;
         std::unordered_map<std::string, model_uniform_t> uniforms;
         GLuint indices_buffer_id;
         int num_indices;

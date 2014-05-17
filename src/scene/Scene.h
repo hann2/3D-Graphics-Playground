@@ -15,7 +15,8 @@ class Scene {
     public:
         Scene();
         virtual void setup_scene() = 0;
-        void render(int w, int h);
+        virtual void render(int w, int h, float t);
+        virtual void render(int w, int h);
         static GLuint load_shaders(std::string v_file, std::string g_file, std::string f_file);
 };
 

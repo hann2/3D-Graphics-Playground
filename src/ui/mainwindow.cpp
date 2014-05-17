@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    this->setFixedSize(1200, 675);
+    this->setFixedSize(1440, 810);
     ui->setupUi(this);
     GLFrame = new QGLFrame();      // create our subclassed GLWidget
     setCentralWidget(GLFrame);      // assign it to the central widget of the window

@@ -16,6 +16,9 @@
 #include "EfficientScene.h"
 #include "ToonScene.h"
 #include "SSAOScene.h"
+#include "ShadowScene.h"
+#include "ParallaxScene.h"
+#include "WaterScene.h"
 
 // fps in hz
 #define FRAME_RATE 60
@@ -51,10 +54,10 @@ void QGLRenderThread::init_gl_context() {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
+    glDepthFunc(GL_LESS);
 }
 
 void QGLRenderThread::run() {
@@ -71,8 +74,12 @@ void QGLRenderThread::run() {
     // PerlinScene scene;
     // EfficientScene scene;
     // ToonScene scene;
-    SSAOScene scene;
+    // SSAOScene scene;
+    // ShadowScene scene;
+    ParallaxScene scene;
+    // WaterScene scene;
     scene.setup_scene();
+    int t = 0;
 
     while (doRendering) {
         long int start = QDateTime::currentMSecsSinceEpoch();
@@ -92,14 +99,15 @@ void QGLRenderThread::run() {
         if ((errCode = glGetError()) != GL_NO_ERROR) {
             std::cout << "OpenGL error!\n";
             std::cout << gluErrorString(errCode) << "\n";
-            doRendering = false;
+            // doRendering = false;
         }
 
         int time_elapsed = QDateTime::currentMSecsSinceEpoch() - start;
-        // std::cout << "Frame took " << time_elapsed << " miliseconds.\n";
-        if (time_elapsed < FRAME_LENGTH) {
-            msleep(FRAME_LENGTH - time_elapsed);
-        }
+        std::cout << "Frame took " << time_elapsed << " miliseconds.\n";
+        // if (time_elapsed < FRAME_LENGTH) {
+        //     msleep(FRAME_LENGTH - time_elapsed);
+        // }
+        t += 1;
     }
 }
 

@@ -22,6 +22,8 @@ def configure(ctx):
 
 def build(ctx):
     src_files = [
+        'lib/lodepng/lodepng.cpp',
+
         'src/main.cpp',
 
         'src/ui/glframe.cpp',
@@ -46,7 +48,10 @@ def build(ctx):
         'src/scene/EfficientScene.cpp',
         'src/scene/DeferredScene.cpp',
         'src/scene/ToonScene.cpp',
-        'src/scene/SSAOScene.cpp'
+        'src/scene/SSAOScene.cpp',
+        'src/scene/ShadowScene.cpp',
+        'src/scene/ParallaxScene.cpp',
+        'src/scene/WaterScene.cpp'
     ]
     ctx.program(
         source = ' '.join(src_files),
